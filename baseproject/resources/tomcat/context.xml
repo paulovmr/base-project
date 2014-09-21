@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<Context>
+
+    <!-- Default set of monitored resources -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+	<Resource 
+		name="jdbc/baseproject-ds"
+		auth="Container" 
+		type="javax.sql.DataSource"
+        maxActive="100"
+		maxIdle="30"
+		maxWait="10000"
+        username="baseproject"
+		password="baseproject"
+		driverClassName="org.postgresql.Driver"
+		url="jdbc:postgresql://127.0.0.1:5432/baseprojectdb"
+	/>
+</Context>
