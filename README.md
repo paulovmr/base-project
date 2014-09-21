@@ -10,10 +10,10 @@ Before follow this tutorial, define your new project name, and replace it in all
 
 ### Pre-requisites
 
-    - Java 8
-    - Maven 3
-    - Eclipse (used here: Eclipse Luna)
-    - PostgreSQL (used here: 9.3)
+  * Java 8
+  * Maven 3
+  * Eclipse (used here: Eclipse Luna)
+  * PostgreSQL (used here: 9.3)
     
 ### Installing and configuring your PostgreSQL database
 
@@ -40,11 +40,10 @@ Before follow this tutorial, define your new project name, and replace it in all
 
 ### Steps used for its creation
 
-    * Creating Maven project:
-        - `mvn archetype:generate -DgroupId=com.baseproject -DartifactId=baseproject -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false`
-        - `mvn clean install`
-        - `mvn eclipse:eclipse`
-        - Create Java source folder on baseproject project
-        - Create META-INF folder on baseproject/src/main/resources
-        - Create persistence.xml file on baseproject/src/main/resources/META-INF
-        - 
+  * Creating Maven project:
+   - `mvn archetype:generate -DgroupId=com.baseproject -DartifactId=baseproject -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false`
+   - `mvn clean install`
+   - `mvn eclipse:eclipse`
+   - Create Java source folder on baseproject project
+   - Create META-INF folder on baseproject/src/main/resources
+   - Create persistence.xml file on baseproject/src/main/resources/META-INF
