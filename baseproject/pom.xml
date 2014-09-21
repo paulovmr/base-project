@@ -17,6 +17,7 @@
 
         <hibernate.version>4.3.6.Final</hibernate.version>
         <postgresql.version>9.1-901.jdbc4</postgresql.version>
+        <servlet-api.version>2.5</servlet-api.version>
         <junit.version>4.11</junit.version>
 
         <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
