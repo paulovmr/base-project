@@ -12,7 +12,7 @@ public class JacksonConfig implements ContextResolver<ObjectMapper> {
 
 	public JacksonConfig() throws Exception {
 		objectMapper = new ObjectMapper().configure(
-				SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+				SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, true);
 	}
 
 	@Override
