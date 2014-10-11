@@ -38,12 +38,3 @@ Before follow this tutorial, define your new project name, and replace it in all
    - Know the status: `sudo /etc/init.d/postgresql status`
    - Restart the service: `sudo /etc/init.d/postgresql restart`
 
-### Steps used for its creation
-
-  * Creating Maven project:
-   - `mvn archetype:generate -DgroupId=com.baseproject -DartifactId=baseproject -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false`
-   - `mvn clean install`
-   - `mvn eclipse:eclipse`
-   - Create Java source folder on baseproject project
-   - Create META-INF folder on baseproject/src/main/resources
-   - Create persistence.xml file on baseproject/src/main/resources/META-INF
