@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 
-import com.baseproject.util.utility.ReflectionUtils;
+import com.baseproject.util.reflection.ReflectionUtils;
 
 public class Validator {
 

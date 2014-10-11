@@ -1,21 +1,28 @@
-package com.baseproject.model.user;
+package com.baseproject.model.entities;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.baseproject.model.common.BaseEntity;
+import com.baseproject.model.common.Entity;
 import com.baseproject.util.validation.NotEmpty;
 
-@Entity
+@javax.persistence.Entity
 @Table(name = "UserTable")
-public class User extends BaseEntity {
+public class User extends Entity {
 
 	private static final long serialVersionUID = 64264926208955788L;
 
 	@NotEmpty
 	@Column(nullable = false)
 	private String name;
+	
+	@SuppressWarnings("unused")
+	private User() {
+	}
+	
+	public User(String name) {
+		setName(name);
+	}
 	
 	public String getName() {
 		return name;
