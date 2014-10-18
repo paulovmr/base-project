@@ -35,6 +35,6 @@ Before follow this tutorial, define your new project name, and replace it in all
   * Use the following commands to control the PostgreSQL server:
    - Start the service: `sudo /etc/init.d/postgresql start`
    - Stop the service: `sudo /etc/init.d/postgresql stop`
-   - Know the status: `sudo /etc/init.d/postgresql status`
+   - Find out the status: `sudo /etc/init.d/postgresql status`
    - Restart the service: `sudo /etc/init.d/postgresql restart`
 
