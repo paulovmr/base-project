@@ -10,28 +10,39 @@ import javax.persistence.TypedQuery;
 import com.baseproject.model.config.MyEntityManager;
 import com.baseproject.util.date.DateUtils;
 
-public class Repository<E> {
+public class Repository<E extends BaseEntity<E>> {
+	
+	private Class<E> clazz;
+	
+	public Repository() {
+	}
+	
+	public Repository(Class<E> clazz) {
+		this.clazz = clazz;
+	}
 
-    public void save(final Entity entity) {
+    public E save(final E entity) {
 		Date now = DateUtils.now();
 		entity.updateEntity(now);
-		
-        MyEntityManager.get().persist(entity);
+
+        E mergedEntity = MyEntityManager.get().merge(entity);
+        MyEntityManager.get().persist(mergedEntity);
+        
+        return mergedEntity;
     }
 
-    public void update(final Entity entity) {
-		Date now = DateUtils.now();
-		entity.updateEntity(now);
-		
-        MyEntityManager.get().merge(entity);
-    }
-
-	public void remove(final Entity entity) {
+	public void remove(final E entity) {
 		MyEntityManager.get().remove(entity);
 	}
 
-	public E fetch(Class<E> clazz, final Long id) {
+	public E fetch(final Long id) {
         return MyEntityManager.get().find(clazz, id);
+    }
+
+	public E fetch(String attribute, Object value) {
+        TypedQuery<E> query = createNamedQuery("FROM " + clazz.getSimpleName() + " WHERE " + attribute + " = :value");
+        query.setParameter("value", value);
+        return query.getSingleResult();
     }
 
     public List<E> list(Filter<E> filter) {
@@ -53,8 +64,8 @@ public class Repository<E> {
     	return null;
     }
 
-	public Query createQuery(String query) {
-		return MyEntityManager.get().createQuery(query);
+	public TypedQuery<E> createNamedQuery(String query) {
+		return MyEntityManager.get().createNamedQuery(query, clazz);
 	}
 
 	public void setParameters(Query query, Map<String, String> parameters) {

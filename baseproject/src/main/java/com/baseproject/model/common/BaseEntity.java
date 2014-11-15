@@ -8,15 +8,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 
 @MappedSuperclass
-public abstract class Entity implements Serializable {
+public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializable {
 
 	private static final long serialVersionUID = 5210529725033309138L;
-
-	@Transient
-    private static final transient Repository<Entity> REPOSITORY = new Repository<>();
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +23,7 @@ public abstract class Entity implements Serializable {
 	
 	@Column(nullable = false)
 	private Date createdAt;
-
+	
 	public Long getId() {
 		return id;
 	}
@@ -52,17 +48,17 @@ public abstract class Entity implements Serializable {
 		this.updatedAt = date;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void save() {
-		REPOSITORY.save(this);
+		repository().save((E) this);
     }
 
-    public void update(final Entity entity) {
-		REPOSITORY.update(this);
-    }
-
+	@SuppressWarnings("unchecked")
 	public void remove() {
-		REPOSITORY.remove(this);
+		repository().remove((E) this);
 	}
+	
+	public abstract Repository<E> repository();
 	
 	@Override
     public int hashCode() {
@@ -86,7 +82,8 @@ public abstract class Entity implements Serializable {
             return false;
         }
 
-        Entity other = (Entity) obj;
+        @SuppressWarnings("unchecked")
+		BaseEntity<E> other = (BaseEntity<E>) obj;
         if (id == null) {
             if (other.id != null) {
                 return false;

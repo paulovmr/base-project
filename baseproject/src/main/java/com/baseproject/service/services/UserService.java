@@ -17,7 +17,8 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createUser(@PathParam("name") String name) {
 		
-		User user = new User(name);
+		User user = new User();
+		user.setName(name);
 		user.save();
 		
 		return Response.status(200).entity(user).build();
