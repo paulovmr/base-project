@@ -49,7 +49,6 @@ public class UserService {
 		Users user = Users.repository().fetch(id);
 		
 		if (user != null) {
-			user.setPassword(null);
 			return Response.status(200).entity(user).build();
 		} else {
 			return Response.status(404).build();
