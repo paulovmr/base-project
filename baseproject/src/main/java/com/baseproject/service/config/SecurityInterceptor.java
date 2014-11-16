@@ -26,7 +26,7 @@ public class SecurityInterceptor implements ContainerRequestFilter {
 	
 	private static final String AUTHORIZATION_PROPERTY = "auth";
 	private static final ServerResponse ACCESS_DENIED = new ServerResponse("Access denied for this resource.", 401, new Headers<Object>());
-	private static final ServerResponse NOT_LOGGED = new ServerResponse("Not logged in.", 401, new Headers<Object>());
+	private static final ServerResponse NOT_LOGGED = new ServerResponse("Not logged.", 401, new Headers<Object>());
 	private static final ServerResponse ACCESS_FORBIDDEN = new ServerResponse("Nobody can access this resource.", 403, new Headers<Object>());
 
 	@Override
