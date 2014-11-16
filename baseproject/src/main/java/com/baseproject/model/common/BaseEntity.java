@@ -55,7 +55,7 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 		this.id = null;
 		this.createdAt = null;
 		this.updatedAt = null;
-		
+
 		return getRepository().save((E) this);
     }
 

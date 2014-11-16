@@ -26,7 +26,7 @@ public class Repository<E extends BaseEntity<E>> {
     public E save(final E entity) throws ValidationException {
 		Date now = DateUtils.now();
 		entity.updateEntity(now);
-		
+
 		Validator.validate(entity);
 
         MyEntityManager.get().persist(entity);
@@ -44,7 +44,7 @@ public class Repository<E extends BaseEntity<E>> {
     }
 
 	public E fetch(String attribute, Object value) {
-        TypedQuery<E> query = createNamedQuery("FROM " + clazz.getSimpleName() + " WHERE " + attribute + " = :value");
+        TypedQuery<E> query = createQuery("FROM " + clazz.getSimpleName() + " WHERE " + attribute + " = :value");
         query.setParameter("value", value);
         return query.getSingleResult();
     }
@@ -68,8 +68,8 @@ public class Repository<E extends BaseEntity<E>> {
     	return null;
     }
 
-	public TypedQuery<E> createNamedQuery(String query) {
-		return MyEntityManager.get().createNamedQuery(query, clazz);
+	public TypedQuery<E> createQuery(String query) {
+		return MyEntityManager.get().createQuery(query, clazz);
 	}
 
 	public void setParameters(Query query, Map<String, String> parameters) {

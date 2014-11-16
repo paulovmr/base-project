@@ -9,6 +9,7 @@ import javax.persistence.Transient;
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
 import com.baseproject.util.validation.NotEmpty;
+import com.baseproject.util.validation.NotNull;
 import com.baseproject.util.validation.ValidationException;
 
 @Entity
@@ -31,6 +32,7 @@ public class Users extends BaseEntity<Users> {
 	@Column(nullable = false, length = 100)
 	private String password;
 	
+	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 30)
 	private Profile profile;

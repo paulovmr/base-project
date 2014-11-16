@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import com.baseproject.model.entities.Users;
-import com.baseproject.util.crypt.CryptUtils;
+import com.baseproject.util.crypt.LoginUtils;
 import com.baseproject.util.validation.ValidationException;
 
 @Path("/users")
@@ -23,16 +23,17 @@ public class UserService {
 	@POST
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response createUser(Users user) {
 		
 		if (user.getPassword() != null) {
-			user.setPassword(CryptUtils.encode(user.getPassword()));
+			user.setPassword(LoginUtils.encode(user.getPassword()));
 		}
 		
 		try {
 			user = user.save();
 		} catch (ValidationException e) {
-			Response.status(422).entity(e.getValidationFailures()).build();
+			return Response.status(422).entity(e.getValidationFailures()).build();
 		}
 		
 		URI location = UriBuilder.fromPath("/users/" + user.getId()).build();
@@ -48,6 +49,7 @@ public class UserService {
 		Users user = Users.repository().fetch(id);
 		
 		if (user != null) {
+			user.setPassword(null);
 			return Response.status(200).entity(user).build();
 		} else {
 			return Response.status(404).build();

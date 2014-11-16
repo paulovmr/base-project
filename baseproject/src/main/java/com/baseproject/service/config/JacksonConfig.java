@@ -11,8 +11,7 @@ public class JacksonConfig implements ContextResolver<ObjectMapper> {
 	private final ObjectMapper objectMapper;
 
 	public JacksonConfig() throws Exception {
-		objectMapper = new ObjectMapper().configure(
-				SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, true);
+		objectMapper = new ObjectMapper().configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, true);
 	}
 
 	@Override

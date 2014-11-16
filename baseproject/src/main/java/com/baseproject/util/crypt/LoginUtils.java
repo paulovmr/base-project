@@ -18,9 +18,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-public class CryptUtils {
+public class LoginUtils {
 
-	private static final String SEPARATOR = "|||||";
+	public static final String FIRST_SEPARATOR = "###";
+	public static final String SECOND_SEPARATOR = "|||||";
 	private static final String ALGORITHM = "AES/CTS/PKCS5PADDING";
 	private static final byte[] SALT = new byte[] { 0x5a, 0x42, 0x54, 0x6d, 0x0d, (byte) 0xd6, (byte) 0xa0, (byte) 0xed };
 
@@ -31,11 +32,15 @@ public class CryptUtils {
 	public static boolean match(String password, String hash) {
 		return BCrypt.checkpw(password, hash);
 	}
+	
+	public static String generateToken(String username, String password) {
+		return username + FIRST_SEPARATOR + encrypt(username, password);
+	}
 
 	public static String encrypt(String username, String password) {
 		try {
 			Cipher cipher = getCipher(username, Cipher.ENCRYPT_MODE);
-		    String usernamePassword = username + SEPARATOR + password;
+		    String usernamePassword = username + SECOND_SEPARATOR + password;
 		    
 			byte[] encryptedUsernamePassword = cipher.doFinal(usernamePassword.getBytes());
 			String encodedUsernamePassword = Base64.getEncoder().encodeToString(encryptedUsernamePassword);
@@ -47,7 +52,7 @@ public class CryptUtils {
 		}
 	}
 
-	public static String decrypt(String username, String encryptedUsernamePassword) throws GeneralSecurityException {
+	public static String decrypt(String username, String encryptedUsernamePassword) {
 		try {
 			Cipher cipher = getCipher(username, Cipher.DECRYPT_MODE);
 			
