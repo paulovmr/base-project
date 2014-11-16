@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import com.baseproject.util.validation.ValidationException;
+
 @MappedSuperclass
 public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializable {
 
@@ -49,16 +51,22 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void save() {
-		repository().save((E) this);
+	public E save() throws ValidationException {
+		this.id = null;
+		this.createdAt = null;
+		this.updatedAt = null;
+		
+		return getRepository().save((E) this);
     }
 
 	@SuppressWarnings("unchecked")
 	public void remove() {
-		repository().remove((E) this);
+		getRepository().remove((E) this);
 	}
 	
-	public abstract Repository<E> repository();
+	public abstract E update(E e) throws ValidationException;
+	
+	protected abstract Repository<E> getRepository();
 	
 	@Override
     public int hashCode() {

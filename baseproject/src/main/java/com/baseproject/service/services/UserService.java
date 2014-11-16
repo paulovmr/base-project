@@ -1,26 +1,56 @@
 package com.baseproject.service.services;
 
+import java.net.URI;
+
+import javax.annotation.security.PermitAll;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
-import com.baseproject.model.entities.User;
+import com.baseproject.model.entities.Users;
+import com.baseproject.util.crypt.CryptUtils;
+import com.baseproject.util.validation.ValidationException;
 
-@Path("/user")
+@Path("/users")
 public class UserService {
- 
+	 
+	@POST
+	@PermitAll
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response createUser(Users user) {
+		
+		if (user.getPassword() != null) {
+			user.setPassword(CryptUtils.encode(user.getPassword()));
+		}
+		
+		try {
+			user = user.save();
+		} catch (ValidationException e) {
+			Response.status(422).entity(e.getValidationFailures()).build();
+		}
+		
+		URI location = UriBuilder.fromPath("/users/" + user.getId()).build();
+		return Response.status(200).location(location).build();
+	}
+	 
 	@GET
-	@Path("/{name}")
+	@Path("/{id}")
+	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createUser(@PathParam("name") String name) {
+	public Response fetchUser(@PathParam("id") Long id) {
 		
-		User user = new User();
-		user.setName(name);
-		user.save();
+		Users user = Users.repository().fetch(id);
 		
-		return Response.status(200).entity(user).build();
+		if (user != null) {
+			return Response.status(200).entity(user).build();
+		} else {
+			return Response.status(404).build();
+		}
 	}
 }

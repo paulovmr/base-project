@@ -9,6 +9,8 @@ import javax.persistence.TypedQuery;
 
 import com.baseproject.model.config.MyEntityManager;
 import com.baseproject.util.date.DateUtils;
+import com.baseproject.util.validation.ValidationException;
+import com.baseproject.util.validation.Validator;
 
 public class Repository<E extends BaseEntity<E>> {
 	
@@ -21,12 +23,14 @@ public class Repository<E extends BaseEntity<E>> {
 		this.clazz = clazz;
 	}
 
-    public E save(final E entity) {
+    public E save(final E entity) throws ValidationException {
 		Date now = DateUtils.now();
 		entity.updateEntity(now);
+		
+		Validator.validate(entity);
 
+        MyEntityManager.get().persist(entity);
         E mergedEntity = MyEntityManager.get().merge(entity);
-        MyEntityManager.get().persist(mergedEntity);
         
         return mergedEntity;
     }

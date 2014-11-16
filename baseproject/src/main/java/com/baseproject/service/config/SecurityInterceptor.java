@@ -20,16 +20,15 @@ import org.jboss.resteasy.core.Headers;
 import org.jboss.resteasy.core.ResourceMethodInvoker;
 import org.jboss.resteasy.core.ServerResponse;
 
-import com.baseproject.model.entities.User;
-import com.baseproject.util.hash.HashUtils;
+import com.baseproject.model.entities.Users;
+import com.baseproject.util.crypt.CryptUtils;
 
 @Provider
 public class SecurityInterceptor implements ContainerRequestFilter {
 	
-	private static final String AUTHORIZATION_PROPERTY = "Authorization";
-	private static final String AUTHENTICATION_SCHEME = "Basic";
-	private static final ServerResponse ACCESS_DENIED = new ServerResponse("Access denied for this resource", 401, new Headers<Object>());
-	private static final ServerResponse ACCESS_FORBIDDEN = new ServerResponse("Nobody can access this resource", 403, new Headers<Object>());
+	private static final String AUTHORIZATION_PROPERTY = "auth";
+	private static final ServerResponse ACCESS_DENIED = new ServerResponse("Access denied for this resource.", 401, new Headers<Object>());
+	private static final ServerResponse ACCESS_FORBIDDEN = new ServerResponse("Nobody can access this resource.", 403, new Headers<Object>());
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) {
@@ -45,6 +44,7 @@ public class SecurityInterceptor implements ContainerRequestFilter {
 
 			final MultivaluedMap<String, String> headers = requestContext.getHeaders();
 
+			
 			final List<String> authorization = headers.get(AUTHORIZATION_PROPERTY);
 
 			if (authorization == null || authorization.isEmpty()) {
@@ -52,7 +52,7 @@ public class SecurityInterceptor implements ContainerRequestFilter {
 				return;
 			}
 
-			final String encodedUserPassword = authorization.get(0).replaceFirst(AUTHENTICATION_SCHEME + " ", "");
+			final String encodedUserPassword = requestContext.getCookies().get(AUTHORIZATION_PROPERTY).getValue();//authorization.get(0);
 
 			String usernameAndPassword = new String(Base64.getDecoder().decode(encodedUserPassword));
 
@@ -75,13 +75,10 @@ public class SecurityInterceptor implements ContainerRequestFilter {
 		}
 	}
 
-	private boolean isUserAllowed(final String username, final String password,
-			final Set<String> rolesSet) {
+	private boolean isUserAllowed(final String username, final String password,	final Set<String> rolesSet) {
+		Users user = Users.repository().fetch("username", username);
 		
-		User user = User.REPOSITORY.fetch("username", username);
-		
-		if (HashUtils.match(password, user.getPassword())) {
-			
+		if (CryptUtils.match(password, user.getPassword())) {
 			String userRole = user.getProfile().name();
 
 			if (rolesSet.contains(userRole)) {
@@ -91,5 +88,4 @@ public class SecurityInterceptor implements ContainerRequestFilter {
 		
 		return false;
 	}
-
 }
