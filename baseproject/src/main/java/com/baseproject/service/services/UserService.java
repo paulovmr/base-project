@@ -13,21 +13,21 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import com.baseproject.model.entities.Users;
-import com.baseproject.util.crypt.LoginUtils;
+import com.baseproject.model.entities.User;
+import com.baseproject.util.utils.OneWayEncryptionUtils;
 import com.baseproject.util.validation.ValidationException;
 
 @Path("/users")
-public class UserService {
+public class UserService extends BaseService {
 	 
 	@POST
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createUser(Users user) {
+	public Response createUser(User user) {
 		
-		if (user.getPassword() != null) {
-			user.setPassword(LoginUtils.encode(user.getPassword()));
+		if (user.encodedPassword() != null) {
+			user.setPassword(OneWayEncryptionUtils.encode(user.encodedPassword()));
 		}
 		
 		try {
@@ -45,10 +45,10 @@ public class UserService {
 	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchUser(@PathParam("id") Long id) {
-		
-		Users user = Users.repository().fetch(id);
-		
+		User user = User.repository().fetch(id);
+		System.out.println("asdasd");
 		if (user != null) {
+			user.detach();
 			return Response.status(200).entity(user).build();
 		} else {
 			return Response.status(404).build();

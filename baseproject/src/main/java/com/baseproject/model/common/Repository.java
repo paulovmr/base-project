@@ -4,11 +4,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Entity;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import com.baseproject.model.config.MyEntityManager;
-import com.baseproject.util.date.DateUtils;
+import com.baseproject.util.utils.DateUtils;
 import com.baseproject.util.validation.ValidationException;
 import com.baseproject.util.validation.Validator;
 
@@ -44,9 +45,14 @@ public class Repository<E extends BaseEntity<E>> {
     }
 
 	public E fetch(String attribute, Object value) {
-        TypedQuery<E> query = createQuery("FROM " + clazz.getSimpleName() + " WHERE " + attribute + " = :value");
+        TypedQuery<E> query = createQuery("FROM " + clazz.getAnnotation(Entity.class).name() + " WHERE " + attribute + " = :value");
         query.setParameter("value", value);
-        return query.getSingleResult();
+        List<E> result = query.getResultList();
+        
+        if (result != null && !result.isEmpty()) {
+        	return result.get(0);
+        } 
+        return null;
     }
 
     public List<E> list(Filter<E> filter) {
@@ -76,5 +82,9 @@ public class Repository<E extends BaseEntity<E>> {
 		for (String parameter : parameters.keySet()) {
 			query.setParameter(parameter, parameters.get(parameter));
 		}
+	}
+	
+	public void detach(E entity) {
+		MyEntityManager.get().detach(entity);
 	}
 }

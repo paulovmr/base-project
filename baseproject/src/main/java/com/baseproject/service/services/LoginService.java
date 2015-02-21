@@ -1,4 +1,4 @@
-package com.baseproject.service.login;
+package com.baseproject.service.services;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -7,8 +7,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
-import com.baseproject.model.entities.Users;
-import com.baseproject.util.crypt.LoginUtils;
+import com.baseproject.model.entities.User;
+import com.baseproject.service.dtos.AuthenticationData;
+import com.baseproject.service.security.Token;
+import com.baseproject.util.utils.OneWayEncryptionUtils;
 
 @Path("/login")
 public class LoginService {
@@ -20,10 +22,10 @@ public class LoginService {
 		String username = authenticationData.getUsername();
 		String password = authenticationData.getPassword();
 		
-		Users user = Users.repository().fetch("username", username);
+		User user = User.repository().fetch("username", username);
 		
-		if (LoginUtils.match(password, user.getPassword())) {			
-			NewCookie cookie = new NewCookie("auth", LoginUtils.generateToken(username, password));
+		if (user != null && OneWayEncryptionUtils.match(password, user.encodedPassword())) {			
+			NewCookie cookie = new NewCookie("auth", Token.fromUser(user).encrypted());
 			return Response.status(200).cookie(cookie).build();
 		}
 		

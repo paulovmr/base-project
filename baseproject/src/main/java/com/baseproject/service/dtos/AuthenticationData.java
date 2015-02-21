@@ -1,9 +1,9 @@
-package com.baseproject.service.login;
+package com.baseproject.service.dtos;
 
 public class AuthenticationData {
-	
+
 	private String username;
-	
+
 	private String password;
 
 	public String getUsername() {

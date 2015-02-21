@@ -1,4 +1,4 @@
-package com.baseproject.util.date;
+package com.baseproject.util.utils;
 
 import java.util.Date;
 

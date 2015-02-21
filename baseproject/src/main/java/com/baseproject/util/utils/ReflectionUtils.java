@@ -1,4 +1,4 @@
-package com.baseproject.util.reflection;
+package com.baseproject.util.utils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import com.baseproject.util.validation.ValidationException;
 
 @MappedSuperclass
@@ -34,10 +36,12 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 		this.id = id;
 	}
 	
+	@JsonIgnore
 	public Date getUpdatedAt() {
 		return updatedAt;
 	}
 	
+	@JsonIgnore
 	public Date getCreatedAt() {
 		return createdAt;
 	}
@@ -62,6 +66,11 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 	@SuppressWarnings("unchecked")
 	public void remove() {
 		getRepository().remove((E) this);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void detach() {
+		getRepository().detach((E) this);
 	}
 	
 	public abstract E update(E e) throws ValidationException;
@@ -101,5 +110,15 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
         }
         
         return true;
+    }
+    
+    @JsonIgnore
+    public String getHibernateLazyInitializer() {
+    	return null;
+    }
+    
+    @JsonIgnore
+    public String getHandler() {
+    	return null;
     }
 }

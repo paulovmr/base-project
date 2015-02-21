@@ -43,7 +43,7 @@ public class OpenTransactionInViewFilter implements Filter {
             httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("Sorry, there was an error processing your request.");
         } finally {
-            MyEntityManager.free();
+//            MyEntityManager.free();
         }
     }
 
