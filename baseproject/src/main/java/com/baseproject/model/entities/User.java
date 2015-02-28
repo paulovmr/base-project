@@ -11,7 +11,6 @@ import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
 import com.baseproject.util.validation.NotEmpty;
 import com.baseproject.util.validation.NotNull;
-import com.baseproject.util.validation.ValidationException;
 
 @Entity(name = "users")
 public class User extends BaseEntity<User> {
@@ -71,7 +70,7 @@ public class User extends BaseEntity<User> {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public Profile getProfile() {
 		return profile;
 	}
@@ -79,7 +78,7 @@ public class User extends BaseEntity<User> {
 	public void setProfile(Profile profile) {
 		this.profile = profile;
 	}
-	
+
 	public Company getCompany() {
 		return company;
 	}
@@ -93,12 +92,7 @@ public class User extends BaseEntity<User> {
 		return REPOSITORY;
 	}
 
-	@Override
-	public User update(User e) throws ValidationException {
-		setName(e.getName());
-		setUsername(e.getUsername());
-		setProfile(e.getProfile());
-		
-		return this.save();
+	public static String[] getLoadableFields() {
+		return new String[] { "profile", "company" };
 	}
 }

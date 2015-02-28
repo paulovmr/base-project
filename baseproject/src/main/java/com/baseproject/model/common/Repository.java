@@ -40,13 +40,26 @@ public class Repository<E extends BaseEntity<E>> {
 		MyEntityManager.get().remove(entity);
 	}
 
-	public E fetch(final Long id) {
-        return MyEntityManager.get().find(clazz, id);
+	public E fetch(final Long id, String... loads) {
+        return fetch(null, null, loads);
     }
 
-	public E fetch(String attribute, Object value) {
-        TypedQuery<E> query = createQuery("FROM " + clazz.getAnnotation(Entity.class).name() + " WHERE " + attribute + " = :value");
-        query.setParameter("value", value);
+	public E fetch(String attribute, Object value, String... loads) {
+        StringBuilder hql = new StringBuilder();
+        hql.append("FROM " + clazz.getAnnotation(Entity.class).name() + " e");
+        
+        for (String load : loads) {
+        	hql.append(" JOIN FETCH e." + load);
+        }
+        
+        if (attribute != null) {
+        	hql.append(" WHERE " + attribute + " = :value");
+        }
+        
+		TypedQuery<E> query = createQuery(hql.toString());
+        if (attribute != null) {
+        	query.setParameter("value", value);
+        }
         List<E> result = query.getResultList();
         
         if (result != null && !result.isEmpty()) {

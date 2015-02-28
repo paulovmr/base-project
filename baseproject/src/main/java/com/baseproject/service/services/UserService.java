@@ -9,11 +9,14 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import com.baseproject.model.entities.User;
+import com.baseproject.service.dtos.UserData;
+import com.baseproject.service.utils.Loader;
 import com.baseproject.util.utils.OneWayEncryptionUtils;
 import com.baseproject.util.validation.ValidationException;
 
@@ -44,12 +47,10 @@ public class UserService extends BaseService {
 	@Path("/{id}")
 	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response fetchUser(@PathParam("id") Long id) {
-		User user = User.repository().fetch(id);
-		System.out.println("asdasd");
+	public Response fetchUser(@PathParam("id") Long id, @QueryParam("load") String fields) {
+		User user = User.repository().fetch(id, Loader.load(fields, User.class));
 		if (user != null) {
-			user.detach();
-			return Response.status(200).entity(user).build();
+			return Response.status(200).entity(UserData.build(user)).build();
 		} else {
 			return Response.status(404).build();
 		}

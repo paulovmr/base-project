@@ -5,18 +5,17 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
-import com.baseproject.util.validation.NotEmpty;
-import com.baseproject.util.validation.ValidationException;
+import com.baseproject.util.validation.NotNull;
 
 @Entity(name = "features")
 public class Feature extends BaseEntity<Feature> {
@@ -26,11 +25,11 @@ public class Feature extends BaseEntity<Feature> {
 	@Transient
 	private static final transient Repository<Feature> REPOSITORY = new Repository<Feature>(Feature.class);
 
-	@NotEmpty
-	@Column(nullable = false, length = 200)
-	private String name;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, unique = true)
+	private FeatureCode code;
 	
-	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinTable(name = "features_profiles", joinColumns = {
 		@JoinColumn(name = "feature_id", nullable = false, updatable = false)
@@ -46,14 +45,14 @@ public class Feature extends BaseEntity<Feature> {
 	public Feature() {
 	}
 	
-	public String getName() {
-		return name;
+	public FeatureCode getCode() {
+		return code;
 	}
 	
-	public void setName(String name) {
-		this.name = name;
+	public void setCode(FeatureCode code) {
+		this.code = code;
 	}
-	@JsonIgnore
+
 	public List<Profile> getProfiles() {
 		return profiles;
 	}
@@ -65,13 +64,5 @@ public class Feature extends BaseEntity<Feature> {
 	@Override
 	protected Repository<Feature> getRepository() {
 		return REPOSITORY;
-	}
-
-	@Override
-	public Feature update(Feature e) throws ValidationException {
-		setName(e.getName());
-		setProfiles(e.getProfiles());
-		
-		return this.save();
 	}
 }

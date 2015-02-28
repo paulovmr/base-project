@@ -14,7 +14,6 @@ import javax.persistence.Transient;
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
 import com.baseproject.util.validation.NotEmpty;
-import com.baseproject.util.validation.ValidationException;
 
 @Entity(name = "profiles")
 public class Profile extends BaseEntity<Profile> {
@@ -62,13 +61,5 @@ public class Profile extends BaseEntity<Profile> {
 	@Override
 	protected Repository<Profile> getRepository() {
 		return REPOSITORY;
-	}
-
-	@Override
-	public Profile update(Profile e) throws ValidationException {
-		setName(e.getName());
-		setFeatures(e.getFeatures());
-		
-		return this.save();
 	}
 }

@@ -7,7 +7,6 @@ import javax.persistence.Transient;
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
 import com.baseproject.util.validation.NotEmpty;
-import com.baseproject.util.validation.ValidationException;
 
 @Entity(name = "companies")
 public class Company extends BaseEntity<Company> {
@@ -39,12 +38,5 @@ public class Company extends BaseEntity<Company> {
 	@Override
 	protected Repository<Company> getRepository() {
 		return REPOSITORY;
-	}
-
-	@Override
-	public Company update(Company e) throws ValidationException {
-		setName(e.getName());
-		
-		return this.save();
 	}
 }

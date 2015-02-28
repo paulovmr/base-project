@@ -46,7 +46,7 @@ public class Token implements Principal {
 		String userName = user.getName();
 		Long companyId = user.getCompany().getId();
 		String companyName = user.getCompany().getName();
-		List<String> features = user.getProfile().getFeatures().stream().map(f -> f.getName()).collect(Collectors.toList());
+		List<String> features = user.getProfile().getFeatures().stream().map(f -> f.getCode().name()).collect(Collectors.toList());
 		Date creationDate = DateUtils.now();
 		
 		Token token = new Token(userId, userUsername, userName, companyId, companyName, features, creationDate);

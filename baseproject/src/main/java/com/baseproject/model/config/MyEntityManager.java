@@ -3,6 +3,7 @@ package com.baseproject.model.config;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceUnitUtil;
 
 public final class MyEntityManager {
 
@@ -46,5 +47,9 @@ public final class MyEntityManager {
 
     public static void close() {
         factory.close();
+    }
+    
+    public static PersistenceUnitUtil getPersistenceUnitUtil() {
+    	return factory.getPersistenceUnitUtil();
     }
 }

@@ -72,8 +72,7 @@
 			<artifactId>resteasy-servlet-initializer</artifactId>
 			<version>3.0.9.Final</version>
 		</dependency>
-        
-        
+                
         <!-- LOG -->
         
 		<dependency>
