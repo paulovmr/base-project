@@ -1,6 +1,7 @@
 package com.baseproject.service.services;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
@@ -14,8 +15,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import org.jboss.resteasy.annotations.Form;
+
 import com.baseproject.model.common.Loader;
 import com.baseproject.model.entities.User;
+import com.baseproject.model.filters.UserFilter;
 import com.baseproject.service.dtos.UserData;
 import com.baseproject.util.utils.OneWayEncryptionUtils;
 import com.baseproject.util.validation.ValidationException;
@@ -23,12 +27,35 @@ import com.baseproject.util.validation.ValidationException;
 @Path("/users")
 public class UserService extends BaseService {
 	 
+	@GET
+	@Path("/")
+	@PermitAll
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response listUsers(@Form UserFilter userFilter) {
+		List<User> users = User.repository().list(userFilter);
+		
+		return Response.status(200).entity(UserData.build(users)).build();
+	}
+	 
+	@GET
+	@Path("/{id}")
+	@PermitAll
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchUser(@PathParam("id") Long id, @QueryParam("load") String fields) {
+		User user = User.repository().fetch(id, Loader.load(fields, User.class));
+		
+		if (user != null) {
+			return Response.status(200).entity(UserData.build(user)).build();
+		} else {
+			return Response.status(404).build();
+		}
+	}
+	 
 	@POST
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createUser(User user) {
-		
 		if (user.encodedPassword() != null) {
 			user.setPassword(OneWayEncryptionUtils.encode(user.encodedPassword()));
 		}
@@ -41,18 +68,5 @@ public class UserService extends BaseService {
 		
 		URI location = UriBuilder.fromPath("/users/" + user.getId()).build();
 		return Response.status(200).location(location).build();
-	}
-	 
-	@GET
-	@Path("/{id}")
-	@PermitAll
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response fetchUser(@PathParam("id") Long id, @QueryParam("load") String fields) {
-		User user = User.repository().fetch(id, Loader.load(fields, User.class));
-		if (user != null) {
-			return Response.status(200).entity(UserData.build(user)).build();
-		} else {
-			return Response.status(404).build();
-		}
 	}
 }

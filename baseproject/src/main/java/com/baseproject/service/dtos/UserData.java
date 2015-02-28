@@ -1,5 +1,8 @@
 package com.baseproject.service.dtos;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.baseproject.model.entities.User;
 import com.baseproject.util.utils.PersistenceUtils;
 
@@ -32,6 +35,10 @@ public class UserData {
 
 	public static UserData build(User user) {
 		return new UserData(user);
+	}
+
+	public static List<UserData> build(List<User> users) {
+		return users.stream().map(u -> new UserData(u)).collect(Collectors.toList());
 	}
 
 	public Long getId() {

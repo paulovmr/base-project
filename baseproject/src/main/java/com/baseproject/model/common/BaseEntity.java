@@ -64,11 +64,6 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 		getRepository().remove((E) this);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void detach() {
-		getRepository().detach((E) this);
-	}
-	
 	protected abstract Repository<E> getRepository();
 	
 	@Override

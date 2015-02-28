@@ -10,6 +10,7 @@ import javax.persistence.TypedQuery;
 
 import com.baseproject.model.config.MyEntityManager;
 import com.baseproject.util.utils.DateUtils;
+import com.baseproject.util.utils.QueryUtils;
 import com.baseproject.util.validation.ValidationException;
 import com.baseproject.util.validation.Validator;
 
@@ -48,9 +49,7 @@ public class Repository<E extends BaseEntity<E>> {
         StringBuilder hql = new StringBuilder();
         hql.append("FROM " + clazz.getAnnotation(Entity.class).name() + " e");
         
-        for (String load : loads) {
-        	hql.append(" JOIN FETCH e." + load);
-        }
+       	hql.append(QueryUtils.loadQuery(loads));
         
         if (attribute != null) {
         	hql.append(" WHERE " + attribute + " = :value");
