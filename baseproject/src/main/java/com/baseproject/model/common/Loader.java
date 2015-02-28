@@ -1,4 +1,4 @@
-package com.baseproject.service.common;
+package com.baseproject.model.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;

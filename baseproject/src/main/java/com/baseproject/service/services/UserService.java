@@ -14,8 +14,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import com.baseproject.model.common.Loader;
 import com.baseproject.model.entities.User;
-import com.baseproject.service.common.Loader;
 import com.baseproject.service.dtos.UserData;
 import com.baseproject.util.utils.OneWayEncryptionUtils;
 import com.baseproject.util.validation.ValidationException;
