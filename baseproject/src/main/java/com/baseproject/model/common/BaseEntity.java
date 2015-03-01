@@ -26,21 +26,11 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 	@Column(nullable = false)
 	private Date createdAt;
 	
-	public Long getId() {
-		return id;
-	}
+	protected abstract Repository<E> getRepository();
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-	
-	public Date getCreatedAt() {
-		return createdAt;
-	}
+	public abstract void prepareForPersist();
+
+	public abstract void prepareForUpdate();
 	
 	public void updateEntity(Date date) {
 		if (getId() == null) {
@@ -63,8 +53,6 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 	public void remove() {
 		getRepository().remove((E) this);
 	}
-	
-	protected abstract Repository<E> getRepository();
 	
 	@Override
     public int hashCode() {
@@ -100,4 +88,20 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
         
         return true;
     }
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+	
+	public Date getCreatedAt() {
+		return createdAt;
+	}
 }

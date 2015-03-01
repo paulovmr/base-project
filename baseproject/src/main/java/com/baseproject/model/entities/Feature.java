@@ -38,11 +38,19 @@ public class Feature extends BaseEntity<Feature> {
 	})
 	private List<Profile> profiles;
 	
+	public Feature() {
+	}
+	
 	public static Repository<Feature> repository() {
 		return REPOSITORY;
 	}
-	
-	public Feature() {
+
+	@Override
+	public void prepareForPersist() {
+	}
+
+	@Override
+	public void prepareForUpdate() {
 	}
 	
 	public FeatureCode getCode() {

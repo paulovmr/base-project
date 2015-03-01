@@ -9,6 +9,7 @@ import javax.persistence.Transient;
 
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
+import com.baseproject.util.utils.OneWayEncryptionUtils;
 import com.baseproject.util.validation.NotEmpty;
 import com.baseproject.util.validation.NotNull;
 
@@ -40,11 +41,24 @@ public class User extends BaseEntity<User> {
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, optional = false)
 	private Company company;
 	
+	public User() {
+	}
+	
 	public static Repository<User> repository() {
 		return REPOSITORY;
 	}
-	
-	public User() {
+
+	@Override
+	public void prepareForPersist() {
+		setPassword(OneWayEncryptionUtils.encode(password));
+	}
+
+	@Override
+	public void prepareForUpdate() {
+	}
+
+	public String encodedPassword() {
+		return password;
 	}
 	
 	public String getName() {
@@ -61,10 +75,6 @@ public class User extends BaseEntity<User> {
 	
 	public void setUsername(String username) {
 		this.username = username;
-	}
-	
-	public String encodedPassword() {
-		return password;
 	}
 	
 	public void setPassword(String password) {
@@ -90,9 +100,5 @@ public class User extends BaseEntity<User> {
 	@Override
 	protected Repository<User> getRepository() {
 		return REPOSITORY;
-	}
-
-	public static String[] getLoadableFields() {
-		return new String[] { "profile", "company" };
 	}
 }

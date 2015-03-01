@@ -3,6 +3,8 @@ package com.baseproject.service.dtos;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.baseproject.model.entities.Company;
+import com.baseproject.model.entities.Profile;
 import com.baseproject.model.entities.User;
 import com.baseproject.util.utils.PersistenceUtils;
 
@@ -14,6 +16,8 @@ public class UserData {
 	private String name;
 	
 	private String username;
+	
+	private String password;
 	
 	private ProfileData profile;
 	
@@ -33,12 +37,39 @@ public class UserData {
 		}		
 	}
 
-	public static UserData build(User user) {
+	public static List<User> fetch(List<UserData> userDatas) {
+		return userDatas.stream().map(u -> User.repository().fetch(u.getId())).collect(Collectors.toList());
+	}
+
+	public static User build(UserData userData) {
+		User user = new User();
+		
+		user.setId(userData.getId());
+		user.setName(userData.getName());
+		user.setUsername(userData.getUsername());
+		user.setPassword(userData.getPassword());
+		
+		if (userData.getProfile() != null) {
+			user.setProfile(Profile.repository().fetch(userData.getProfile().getId()));
+		}
+		
+		if (userData.getCompany() != null) {
+			user.setCompany(Company.repository().fetch(userData.getCompany().getId()));
+		}
+		
+		return user;
+	}
+
+	public static List<User> build(List<UserData> userDatas) {
+		return userDatas.stream().map(u -> build(u)).collect(Collectors.toList());
+	}
+
+	public static UserData unbuild(User user) {
 		return new UserData(user);
 	}
 
-	public static List<UserData> build(List<User> users) {
-		return users.stream().map(u -> new UserData(u)).collect(Collectors.toList());
+	public static List<UserData> unbuild(List<User> users) {
+		return users.stream().map(u -> unbuild(u)).collect(Collectors.toList());
 	}
 
 	public Long getId() {
@@ -63,6 +94,14 @@ public class UserData {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public ProfileData getProfile() {

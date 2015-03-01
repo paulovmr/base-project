@@ -23,6 +23,35 @@ public class FeatureData {
 			this.profiles = feature.getProfiles().stream().map(p -> new ProfileData(p)).collect(Collectors.toList());
 		}
 	}
+
+	public static List<Feature> fetch(List<FeatureData> featureDatas) {
+		return featureDatas.stream().map(f -> Feature.repository().fetch(f.getId())).collect(Collectors.toList());
+	}
+
+	public static Feature build(FeatureData featureData) {
+		Feature feature = new Feature();
+		
+		feature.setId(featureData.getId());
+		feature.setCode(featureData.getCode());
+		
+		if (featureData.getProfiles() != null) {
+			feature.setProfiles(ProfileData.fetch(featureData.getProfiles()));
+		}
+		
+		return feature;
+	}
+
+	public static List<Feature> build(List<FeatureData> featureDatas) {
+		return featureDatas.stream().map(f -> build(f)).collect(Collectors.toList());
+	}
+
+	public static FeatureData unbuild(Feature feature) {
+		return new FeatureData(feature);
+	}
+
+	public static List<FeatureData> unbuild(List<Feature> features) {
+		return features.stream().map(f -> unbuild(f)).collect(Collectors.toList());
+	}
 	
 	public Long getId() {
 		return id;

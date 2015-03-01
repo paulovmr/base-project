@@ -5,8 +5,10 @@ import java.util.List;
 
 import javax.annotation.security.PermitAll;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -21,20 +23,21 @@ import com.baseproject.model.common.Loader;
 import com.baseproject.model.entities.User;
 import com.baseproject.model.filters.UserFilter;
 import com.baseproject.service.dtos.UserData;
-import com.baseproject.util.utils.OneWayEncryptionUtils;
 import com.baseproject.util.validation.ValidationException;
 
-@Path("/users")
+@Path(UserService.PATH)
 public class UserService extends BaseService {
+	
+	public static final String PATH = "/users";
 	 
 	@GET
 	@Path("/")
 	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response listUsers(@Form UserFilter userFilter) {
+	public Response searchUsers(@Form UserFilter userFilter) {
 		List<User> users = User.repository().list(userFilter);
 		
-		return Response.status(200).entity(UserData.build(users)).build();
+		return Response.status(200).entity(UserData.unbuild(users)).build();
 	}
 	 
 	@GET
@@ -45,7 +48,7 @@ public class UserService extends BaseService {
 		User user = User.repository().fetch(id, Loader.load(fields, User.class));
 		
 		if (user != null) {
-			return Response.status(200).entity(UserData.build(user)).build();
+			return Response.status(200).entity(UserData.unbuild(user)).build();
 		} else {
 			return Response.status(404).build();
 		}
@@ -54,19 +57,48 @@ public class UserService extends BaseService {
 	@POST
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response createUser(User user) {
-		if (user.encodedPassword() != null) {
-			user.setPassword(OneWayEncryptionUtils.encode(user.encodedPassword()));
-		}
+	public Response createUser(UserData userData) {
+		User user = UserData.build(userData);
 		
 		try {
+			user.prepareForPersist();
 			user = user.save();
 		} catch (ValidationException e) {
 			return Response.status(422).entity(e.getValidationFailures()).build();
 		}
 		
-		URI location = UriBuilder.fromPath("/users/" + user.getId()).build();
+		URI location = UriBuilder.fromPath(PATH + "/" + user.getId()).build();
 		return Response.status(200).location(location).build();
+	}
+	 
+	@PUT
+	@PermitAll
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateUser(UserData userData) {
+		User user = UserData.build(userData);
+		
+		try {
+			user.prepareForUpdate();
+			user = user.save();
+		} catch (ValidationException e) {
+			return Response.status(422).entity(e.getValidationFailures()).build();
+		}
+		
+		URI location = UriBuilder.fromPath(PATH + "/" + user.getId()).build();
+		return Response.status(200).location(location).build();
+	}
+	 
+	@DELETE
+	@PermitAll
+	public Response deleteUser(@PathParam("id") Long id) {
+		User user = User.repository().fetch(id);
+		
+		if (user != null) {
+			user.remove();
+		} else {
+			return Response.status(404).build();
+		}
+		
+		return Response.status(200).build();
 	}
 }

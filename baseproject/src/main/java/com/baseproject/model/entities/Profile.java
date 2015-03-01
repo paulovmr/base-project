@@ -35,11 +35,19 @@ public class Profile extends BaseEntity<Profile> {
 	})
 	private List<Feature> features;
 	
+	public Profile() {
+	}
+	
 	public static Repository<Profile> repository() {
 		return REPOSITORY;
 	}
-	
-	public Profile() {
+
+	@Override
+	public void prepareForPersist() {
+	}
+
+	@Override
+	public void prepareForUpdate() {
 	}
 	
 	public String getName() {

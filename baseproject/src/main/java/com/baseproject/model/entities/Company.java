@@ -20,11 +20,19 @@ public class Company extends BaseEntity<Company> {
 	@Column(nullable = false, length = 200)
 	private String name;
 	
+	public Company() {
+	}
+	
 	public static Repository<Company> repository() {
 		return REPOSITORY;
 	}
-	
-	public Company() {
+
+	@Override
+	public void prepareForPersist() {
+	}
+
+	@Override
+	public void prepareForUpdate() {
 	}
 	
 	public String getName() {

@@ -23,6 +23,35 @@ public class ProfileData {
 		}
 	}
 
+	public static List<Profile> fetch(List<ProfileData> profileDatas) {
+		return profileDatas.stream().map(p -> Profile.repository().fetch(p.getId())).collect(Collectors.toList());
+	}
+
+	public static Profile build(ProfileData profileData) {
+		Profile profile = new Profile();
+		
+		profile.setId(profileData.getId());
+		profile.setName(profileData.getName());
+		
+		if (profileData.getFeatures() != null) {
+			profile.setFeatures(FeatureData.fetch(profileData.getFeatures()));
+		}
+		
+		return profile;
+	}
+
+	public static List<Profile> build(List<ProfileData> profileDatas) {
+		return profileDatas.stream().map(p -> build(p)).collect(Collectors.toList());
+	}
+
+	public static ProfileData unbuild(Profile profile) {
+		return new ProfileData(profile);
+	}
+
+	public static List<ProfileData> unbuild(List<Profile> profiles) {
+		return profiles.stream().map(p -> unbuild(p)).collect(Collectors.toList());
+	}
+
 	public Long getId() {
 		return id;
 	}
