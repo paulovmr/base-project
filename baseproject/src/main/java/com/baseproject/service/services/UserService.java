@@ -29,7 +29,7 @@ import com.baseproject.util.validation.ValidationException;
 public class UserService extends BaseService {
 	
 	public static final String PATH = "/users";
-	 
+
 	@GET
 	@Path("/")
 	@PermitAll
@@ -55,6 +55,7 @@ public class UserService extends BaseService {
 	}
 	 
 	@POST
+	@Path("/")
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response createUser(UserData userData) {
@@ -72,23 +73,25 @@ public class UserService extends BaseService {
 	}
 	 
 	@PUT
+	@Path("/{id}")
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updateUser(UserData userData) {
+	public Response updateUser(@PathParam("id") Long id, UserData userData) {
 		User user = UserData.build(userData);
 		
 		try {
+			user.setId(id);
 			user.prepareForUpdate();
 			user = user.save();
 		} catch (ValidationException e) {
 			return Response.status(422).entity(e.getValidationFailures()).build();
 		}
 		
-		URI location = UriBuilder.fromPath(PATH + "/" + user.getId()).build();
-		return Response.status(200).location(location).build();
+		return Response.status(200).build();
 	}
 	 
 	@DELETE
+	@Path("/{id}")
 	@PermitAll
 	public Response deleteUser(@PathParam("id") Long id) {
 		User user = User.repository().fetch(id);
