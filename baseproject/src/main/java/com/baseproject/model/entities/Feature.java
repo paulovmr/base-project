@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
 import com.baseproject.util.validation.NotNull;
+import com.baseproject.util.validation.Unique;
 
 @Entity(name = "features")
 public class Feature extends BaseEntity<Feature> {
@@ -26,6 +27,7 @@ public class Feature extends BaseEntity<Feature> {
 	private static final transient Repository<Feature> REPOSITORY = new Repository<Feature>(Feature.class);
 
 	@NotNull
+	@Unique(key = "code")
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, unique = true)
 	private FeatureCode code;

@@ -10,6 +10,7 @@ import javax.persistence.Transient;
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
 import com.baseproject.util.utils.OneWayEncryptionUtils;
+import com.baseproject.util.validation.Length;
 import com.baseproject.util.validation.NotEmpty;
 import com.baseproject.util.validation.NotNull;
 import com.baseproject.util.validation.Unique;
@@ -23,24 +24,27 @@ public class User extends BaseEntity<User> {
 	private static final transient Repository<User> REPOSITORY = new Repository<User>(User.class);
 
 	@NotEmpty
-	@Column(nullable = false, length = 200)
+	@Length(max = 255)
+	@Column(nullable = false, length = 255)
 	private String name;
 
-	@Unique(key = "username")
 	@NotEmpty
-	@Column(nullable = false, length = 200)
+	@Length(max = 255)
+	@Unique(key = "username")
+	@Column(nullable = false, length = 255)
 	private String username;
 
 	@NotEmpty
-	@Column(nullable = false, length = 100)
+	@Length(max = 255)
+	@Column(nullable = false, length = 255)
 	private String password;
 
 	@NotNull
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, optional = false)
 	private Profile profile;
 
-	@Unique(key = "username")
 	@NotNull
+	@Unique(key = "username")
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, optional = false)
 	private Company company;
 	

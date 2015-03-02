@@ -13,6 +13,7 @@ import javax.persistence.Transient;
 
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
+import com.baseproject.util.validation.Length;
 import com.baseproject.util.validation.NotEmpty;
 
 @Entity(name = "profiles")
@@ -24,7 +25,8 @@ public class Profile extends BaseEntity<Profile> {
 	private static final transient Repository<Profile> REPOSITORY = new Repository<Profile>(Profile.class);
 
 	@NotEmpty
-	@Column(nullable = false, length = 200)
+	@Length(max = 255)
+	@Column(nullable = false, length = 255)
 	private String name;
 	
 	@ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)

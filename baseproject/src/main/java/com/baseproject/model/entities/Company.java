@@ -6,6 +6,7 @@ import javax.persistence.Transient;
 
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
+import com.baseproject.util.validation.Length;
 import com.baseproject.util.validation.NotEmpty;
 
 @Entity(name = "companies")
@@ -17,10 +18,12 @@ public class Company extends BaseEntity<Company> {
 	private static final transient Repository<Company> REPOSITORY = new Repository<Company>(Company.class);
 
 	@NotEmpty
+	@Length(max = 255)
 	@Column(nullable = false, length = 255)
 	private String code;
 
 	@NotEmpty
+	@Length(max = 255)
 	@Column(nullable = false, length = 255)
 	private String name;
 	
