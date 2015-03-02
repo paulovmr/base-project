@@ -26,7 +26,7 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 	@Column(nullable = false)
 	private Date createdAt;
 	
-	protected abstract Repository<E> getRepository();
+	public abstract Repository<E> getRepository();
 
 	public abstract void prepareForPersist();
 

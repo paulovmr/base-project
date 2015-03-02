@@ -70,7 +70,7 @@ public class Feature extends BaseEntity<Feature> {
 	}
 
 	@Override
-	protected Repository<Feature> getRepository() {
+	public Repository<Feature> getRepository() {
 		return REPOSITORY;
 	}
 }

@@ -12,6 +12,7 @@ import com.baseproject.model.common.Repository;
 import com.baseproject.util.utils.OneWayEncryptionUtils;
 import com.baseproject.util.validation.NotEmpty;
 import com.baseproject.util.validation.NotNull;
+import com.baseproject.util.validation.Unique;
 
 @Entity(name = "users")
 public class User extends BaseEntity<User> {
@@ -25,6 +26,7 @@ public class User extends BaseEntity<User> {
 	@Column(nullable = false, length = 200)
 	private String name;
 
+	@Unique(key = "username")
 	@NotEmpty
 	@Column(nullable = false, length = 200)
 	private String username;
@@ -36,7 +38,8 @@ public class User extends BaseEntity<User> {
 	@NotNull
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, optional = false)
 	private Profile profile;
-	
+
+	@Unique(key = "username")
 	@NotNull
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, optional = false)
 	private Company company;
@@ -98,7 +101,7 @@ public class User extends BaseEntity<User> {
 	}
 
 	@Override
-	protected Repository<User> getRepository() {
+	public Repository<User> getRepository() {
 		return REPOSITORY;
 	}
 }

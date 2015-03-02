@@ -17,7 +17,11 @@ public class Company extends BaseEntity<Company> {
 	private static final transient Repository<Company> REPOSITORY = new Repository<Company>(Company.class);
 
 	@NotEmpty
-	@Column(nullable = false, length = 200)
+	@Column(nullable = false, length = 255)
+	private String code;
+
+	@NotEmpty
+	@Column(nullable = false, length = 255)
 	private String name;
 	
 	public Company() {
@@ -35,6 +39,14 @@ public class Company extends BaseEntity<Company> {
 	public void prepareForUpdate() {
 	}
 	
+	public String getCode() {
+		return code;
+	}
+	
+	public void setCode(String code) {
+		this.code = code;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -44,7 +56,7 @@ public class Company extends BaseEntity<Company> {
 	}
 
 	@Override
-	protected Repository<Company> getRepository() {
+	public Repository<Company> getRepository() {
 		return REPOSITORY;
 	}
 }

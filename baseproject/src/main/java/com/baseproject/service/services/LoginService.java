@@ -7,6 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import com.baseproject.model.common.Conditions;
 import com.baseproject.model.entities.User;
 import com.baseproject.service.dtos.AuthenticationData;
 import com.baseproject.service.security.Token;
@@ -18,13 +19,11 @@ public class LoginService {
 	@POST
 	@PermitAll
 	@Consumes("application/json")
-	public Response login(AuthenticationData authenticationData) {
-		String username = authenticationData.getUsername();
-		String password = authenticationData.getPassword();
+	public Response login(AuthenticationData ad) {
+		Conditions conditions = Conditions.create().and("username", "=", ad.getUsername()).and("company.code", "=", ad.getCompanyCode());
+		User user = User.repository().fetch(conditions, "profile", "company");
 		
-		User user = User.repository().fetch("username", username);
-		
-		if (user != null && OneWayEncryptionUtils.match(password, user.encodedPassword())) {			
+		if (user != null && OneWayEncryptionUtils.match(ad.getPassword(), user.encodedPassword())) {			
 			NewCookie cookie = new NewCookie("auth", Token.fromUser(user).encrypted());
 			return Response.status(200).cookie(cookie).build();
 		}

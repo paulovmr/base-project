@@ -1,11 +1,11 @@
 package com.baseproject.model.common;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import com.baseproject.model.config.MyEntityManager;
@@ -29,7 +29,7 @@ public class Repository<E extends BaseEntity<E>> {
 		Date now = DateUtils.now();
 		entity.updateEntity(now);
 
-		Validator.validate(entity);
+		new Validator<E>().validate(entity);
 
         MyEntityManager.get().persist(entity);
         E mergedEntity = MyEntityManager.get().merge(entity);
@@ -42,28 +42,35 @@ public class Repository<E extends BaseEntity<E>> {
 	}
 
 	public E fetch(final Long id, String... loads) {
-        return fetch(null, null, loads);
+        return fetch(Conditions.create(), loads);
     }
 
-	public E fetch(String attribute, Object value, String... loads) {
+	public E fetch(Conditions conditions, String... loads) {
         StringBuilder hql = new StringBuilder();
+
+		Map<String, Object> params = new HashMap<>();
+		
         hql.append("FROM " + clazz.getAnnotation(Entity.class).name() + " e");
-        
        	hql.append(QueryUtils.loadQuery(loads));
+        hql.append(" WHERE 1 = 1");
         
-        if (attribute != null) {
-        	hql.append(" WHERE " + attribute + " = :value");
+        if (conditions != null) {
+	        int i = 0;
+	       	for (Condition condition : conditions.getConditions()) {
+	        	hql.append(" AND " + condition.getField() + " " + condition.getOperator() + " :value" + i++);
+	        	params.put("value" + i++, condition.getValue());
+	       	}
         }
-        
-		TypedQuery<E> query = createQuery(hql.toString());
-        if (attribute != null) {
-        	query.setParameter("value", value);
-        }
+       	
+       	TypedQuery<E> query = createQuery(hql.toString());
+       	QueryUtils.setParameters(query, params);
+       	
         List<E> result = query.getResultList();
         
         if (result != null && !result.isEmpty()) {
         	return result.get(0);
-        } 
+        }
+        
         return null;
     }
 
@@ -72,7 +79,7 @@ public class Repository<E extends BaseEntity<E>> {
         return query.getResultList();
     }
 
-    public E only(Filter<E> filter) {
+    public E single(Filter<E> filter) {
         TypedQuery<E> query = filter.buildQuery();
         return query.getSingleResult();
     }
@@ -88,12 +95,6 @@ public class Repository<E extends BaseEntity<E>> {
 
 	public TypedQuery<E> createQuery(String query) {
 		return MyEntityManager.get().createQuery(query, clazz);
-	}
-
-	public void setParameters(Query query, Map<String, String> parameters) {
-		for (String parameter : parameters.keySet()) {
-			query.setParameter(parameter, parameters.get(parameter));
-		}
 	}
 	
 	public void detach(E entity) {

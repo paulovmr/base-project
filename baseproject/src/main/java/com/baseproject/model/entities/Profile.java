@@ -67,7 +67,7 @@ public class Profile extends BaseEntity<Profile> {
 	}
 
 	@Override
-	protected Repository<Profile> getRepository() {
+	public Repository<Profile> getRepository() {
 		return REPOSITORY;
 	}
 }

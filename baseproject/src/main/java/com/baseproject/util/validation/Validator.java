@@ -1,24 +1,31 @@
 package com.baseproject.util.validation;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.baseproject.model.common.BaseEntity;
+import com.baseproject.model.common.Conditions;
 import com.baseproject.util.utils.ReflectionUtils;
 
-public class Validator {
+public class Validator<E extends BaseEntity<E>> {
 
-	public static void validate(Object object) throws ValidationException {
+	public void validate(E entity) throws ValidationException {
 		ValidationException validationException = new ValidationException();
 
-		List<Field> fields = ReflectionUtils.retrieveAllFieldsFromClass(object.getClass());
+		List<Field> fields = ReflectionUtils.retrieveAllFieldsFromClass(entity.getClass());
+
+		checkUniqueAnnotation(entity, fields, validationException);
 
 		for (Field field : fields) {
-			checkNotNullAnnotation(object, field, validationException);
-			checkNotEmptyAnnotation(object, field, validationException);
-			checkLengthAnnotation(object, field, validationException);
-			checkRangeForDoubleAnnotation(object, field, validationException);
-			checkRangeAnnotation(object, field, validationException);
+			checkNotNullAnnotation(entity, field, validationException);
+			checkNotEmptyAnnotation(entity, field, validationException);
+			checkLengthAnnotation(entity, field, validationException);
+			checkRangeForDoubleAnnotation(entity, field, validationException);
+			checkRangeAnnotation(entity, field, validationException);
 		}
 
 		if (validationException.hasValidationFailures()) {
@@ -26,53 +33,90 @@ public class Validator {
 		}
 	}
 
-	private static void checkNotNullAnnotation(Object object, Field field,
+	private void checkUniqueAnnotation(E entity, List<Field> allFields, ValidationException validationException) {
+		
+		Map<String, List<Field>> fieldsByKey = new HashMap<>();
+		
+		for (Field field : allFields) {
+			Unique uniqueAnnotation = (Unique) field.getAnnotation(Unique.class);
+			
+			if (uniqueAnnotation != null) {
+				String key = uniqueAnnotation.key();
+				List<Field> fields = fieldsByKey.get(key);
+				
+				if (fields == null) {
+					fields = new ArrayList<>();
+					fields.add(field);
+					fieldsByKey.put(key, fields);				
+				} else {
+					fields.add(field);
+				}				
+			}
+		}
+		
+		for (String key : fieldsByKey.keySet()) {
+			Conditions conditions = Conditions.create();
+			
+			try {
+				for (Field field : fieldsByKey.get(key)) {
+					field.setAccessible(true);
+					String fieldName = field.getName();
+					Object fieldValue = field.get(entity);
+					
+					conditions.and(fieldName, "=", fieldValue);
+				}
+				
+				E alreadyPersistedEntity = entity.getRepository().fetch(conditions);
+
+				if (alreadyPersistedEntity != null && !alreadyPersistedEntity.getId().equals(entity.getId())) {
+					ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), key, FailureCause.UniqueAttribute);
+					validationException.addValidationFailure(validationFailure);
+				}
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	private void checkNotNullAnnotation(E entity, Field field,
 			ValidationException validationException) {
 		NotNull notNullAnnotation = (NotNull) field.getAnnotation(NotNull.class);
 
 		if (notNullAnnotation != null) {
 			try {
 				field.setAccessible(true);
-				Object fieldValue = field.get(object);
+				Object fieldValue = field.get(entity);
 
 				if (fieldValue == null) {
-					ValidationFailure validationFailure = new ValidationFailure(object.getClass().getSimpleName(), field.getName(), FailureCause.NullAttribute);
+					ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), field.getName(), FailureCause.NullAttribute);
 					validationException.addValidationFailure(validationFailure);
 				}
-			} catch (Exception e) {
+			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
-	
-	private static boolean stringIsEmpty(Object fieldValue) {
-		return fieldValue != null && fieldValue instanceof String && ((String) fieldValue).isEmpty();
-	}
-	
-	private static boolean collectionIsEmpty(Object fieldValue) {
-		return fieldValue != null && fieldValue instanceof Collection<?> && ((Collection<?>) fieldValue).isEmpty();
-	}
 
-	private static void checkNotEmptyAnnotation(Object object, Field field,
+	private void checkNotEmptyAnnotation(E entity, Field field,
 			ValidationException validationException) {
 		NotEmpty notEmptyAnnotation = (NotEmpty) field.getAnnotation(NotEmpty.class);
 
 		if (notEmptyAnnotation != null) {
 			try {
 				field.setAccessible(true);
-				Object fieldValue = field.get(object);
+				Object fieldValue = field.get(entity);
 
 				if (fieldValue == null || stringIsEmpty(fieldValue) || collectionIsEmpty(fieldValue)) {
-					ValidationFailure validationFailure = new ValidationFailure(object.getClass().getSimpleName(), field.getName(), FailureCause.EmptyAttribute);
+					ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), field.getName(), FailureCause.EmptyAttribute);
 					validationException.addValidationFailure(validationFailure);
 				}
-			} catch (Exception e) {
+			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
 
-	private static void checkLengthAnnotation(Object object, Field field,
+	private void checkLengthAnnotation(E entity, Field field,
 			ValidationException validationException) {
 		Length lengthAnnotation = (Length) field.getAnnotation(Length.class);
 
@@ -82,26 +126,26 @@ public class Validator {
 				int max = lengthAnnotation.max();
 
 				field.setAccessible(true);
-				Object fieldValue = field.get(object);
+				Object fieldValue = field.get(entity);
 
 				if (fieldValue != null) {
 					int length = ((String) fieldValue).length();
 
 					if (length < min) {
-						ValidationFailure validationFailure = new ValidationFailure(object.getClass().getSimpleName(), field.getName(), FailureCause.LowerThanMinimumAttribute);
+						ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), field.getName(), FailureCause.LowerThanMinimumAttribute);
 						validationException.addValidationFailure(validationFailure);
 					} else if (length > max) {
-						ValidationFailure validationFailure = new ValidationFailure(object.getClass().getSimpleName(), field.getName(), FailureCause.BiggerThanMaximumAttribute);
+						ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), field.getName(), FailureCause.BiggerThanMaximumAttribute);
 						validationException.addValidationFailure(validationFailure);
 					}
 				}
-			} catch (Exception e) {
+			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
 
-	private static void checkRangeForDoubleAnnotation(Object object, Field field,
+	private void checkRangeForDoubleAnnotation(E entity, Field field,
 			ValidationException validationException) {
 		RangeForDouble rangeAnnotation = (RangeForDouble) field.getAnnotation(RangeForDouble.class);
 
@@ -111,26 +155,26 @@ public class Validator {
 				double max = rangeAnnotation.max();
 
 				field.setAccessible(true);
-				Object fieldObject = field.get(object);
+				Object fieldObject = field.get(entity);
 
 				if (fieldObject != null) {
 					Double fieldValue = (Double) fieldObject;
 
 					if (fieldValue.compareTo(min) < 0) {
-						ValidationFailure validationFailure = new ValidationFailure(object.getClass().getSimpleName(), field.getName(), FailureCause.LowerThanMinimumAttribute);
+						ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), field.getName(), FailureCause.LowerThanMinimumAttribute);
 						validationException.addValidationFailure(validationFailure);
 					} else if (fieldValue.compareTo(max) > 0) {
-						ValidationFailure validationFailure = new ValidationFailure(object.getClass().getSimpleName(), field.getName(), FailureCause.BiggerThanMaximumAttribute);
+						ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), field.getName(), FailureCause.BiggerThanMaximumAttribute);
 						validationException.addValidationFailure(validationFailure);
 					}
 				}
-			} catch (Exception e) {
+			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
 
-	private static void checkRangeAnnotation(Object object, Field field,
+	private void checkRangeAnnotation(E entity, Field field,
 			ValidationException validationException) {
 		Range rangeAnnotation = (Range) field.getAnnotation(Range.class);
 
@@ -140,22 +184,30 @@ public class Validator {
 				int max = rangeAnnotation.max();
 
 				field.setAccessible(true);
-				Object fieldObject = field.get(object);
+				Object fieldObject = field.get(entity);
 
 				if (fieldObject != null) {
 					Integer fieldValue = (Integer) fieldObject;
 
 					if (fieldValue.compareTo(min) < 0) {
-						ValidationFailure validationFailure = new ValidationFailure(object.getClass().getSimpleName(), field.getName(), FailureCause.LowerThanMinimumAttribute);
+						ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), field.getName(), FailureCause.LowerThanMinimumAttribute);
 						validationException.addValidationFailure(validationFailure);
 					} else if (fieldValue.compareTo(max) > 0) {
-						ValidationFailure validationFailure = new ValidationFailure(object.getClass().getSimpleName(), field.getName(), FailureCause.BiggerThanMaximumAttribute);
+						ValidationFailure validationFailure = new ValidationFailure(entity.getClass().getSimpleName(), field.getName(), FailureCause.BiggerThanMaximumAttribute);
 						validationException.addValidationFailure(validationFailure);
 					}
 				}
-			} catch (Exception e) {
+			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+	
+	private boolean stringIsEmpty(Object fieldValue) {
+		return fieldValue != null && fieldValue instanceof String && ((String) fieldValue).isEmpty();
+	}
+	
+	private boolean collectionIsEmpty(Object fieldValue) {
+		return fieldValue != null && fieldValue instanceof Collection<?> && ((Collection<?>) fieldValue).isEmpty();
 	}
 }

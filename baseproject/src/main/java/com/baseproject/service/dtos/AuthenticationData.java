@@ -2,9 +2,19 @@ package com.baseproject.service.dtos;
 
 public class AuthenticationData {
 
+	private String companyCode;
+
 	private String username;
 
 	private String password;
+	
+	public String getCompanyCode() {
+		return companyCode;
+	}
+	
+	public void setCompanyCode(String companyCode) {
+		this.companyCode = companyCode;
+	}
 
 	public String getUsername() {
 		return username;
