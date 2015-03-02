@@ -13,11 +13,14 @@ public class FeatureData {
 	
 	private FeatureCode code;
 	
+	private Boolean visible;
+	
 	private List<ProfileData> profiles;
 
 	public FeatureData(Feature feature) {
 		this.id = feature.getId();
 		this.code = feature.getCode();
+		this.visible = feature.getVisible();
 		
 		if (PersistenceUtils.isLoaded(feature.getProfiles())) {			
 			this.profiles = feature.getProfiles().stream().map(p -> new ProfileData(p)).collect(Collectors.toList());
@@ -33,6 +36,7 @@ public class FeatureData {
 		
 		feature.setId(featureData.getId());
 		feature.setCode(featureData.getCode());
+		feature.setVisible(featureData.getVisible());
 		
 		if (featureData.getProfiles() != null) {
 			feature.setProfiles(ProfileData.fetch(featureData.getProfiles()));
@@ -67,6 +71,14 @@ public class FeatureData {
 
 	public void setCode(FeatureCode code) {
 		this.code = code;
+	}
+	
+	public Boolean getVisible() {
+		return visible;
+	}
+	
+	public void setVisible(Boolean visible) {
+		this.visible = visible;
 	}
 	
 	public List<ProfileData> getProfiles() {

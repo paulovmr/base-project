@@ -31,6 +31,10 @@ public class Feature extends BaseEntity<Feature> {
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, unique = true)
 	private FeatureCode code;
+
+	@NotNull
+	@Column(nullable = false)
+	private Boolean visible;
 	
 	@ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
 	@JoinTable(name = "features_profiles", joinColumns = {
@@ -61,6 +65,14 @@ public class Feature extends BaseEntity<Feature> {
 	
 	public void setCode(FeatureCode code) {
 		this.code = code;
+	}
+	
+	public Boolean getVisible() {
+		return visible;
+	}
+	
+	public void setVisible(Boolean visible) {
+		this.visible = visible;
 	}
 
 	public List<Profile> getProfiles() {
