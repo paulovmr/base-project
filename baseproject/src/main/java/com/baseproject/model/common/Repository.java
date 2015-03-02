@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.TypedQuery;
 
-import com.baseproject.model.config.MyEntityManager;
 import com.baseproject.util.utils.DateUtils;
 import com.baseproject.util.utils.QueryUtils;
 import com.baseproject.util.validation.ValidationException;

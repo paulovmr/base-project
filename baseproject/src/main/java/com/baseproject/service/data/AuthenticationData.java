@@ -1,4 +1,4 @@
-package com.baseproject.service.dtos;
+package com.baseproject.service.data;
 
 public class AuthenticationData {
 

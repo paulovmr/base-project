@@ -9,12 +9,13 @@ import javax.ws.rs.core.Response;
 
 import com.baseproject.model.common.Conditions;
 import com.baseproject.model.entities.User;
-import com.baseproject.service.dtos.AuthenticationData;
+import com.baseproject.service.common.BaseService;
+import com.baseproject.service.data.AuthenticationData;
 import com.baseproject.service.security.Token;
 import com.baseproject.util.utils.OneWayEncryptionUtils;
 
 @Path("/login")
-public class LoginService {
+public class LoginService extends BaseService {
 	 
 	@POST
 	@PermitAll

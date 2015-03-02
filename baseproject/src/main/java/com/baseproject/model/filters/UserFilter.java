@@ -8,7 +8,7 @@ import javax.ws.rs.QueryParam;
 
 import com.baseproject.model.common.Filter;
 import com.baseproject.model.common.Loader;
-import com.baseproject.model.config.MyEntityManager;
+import com.baseproject.model.common.MyEntityManager;
 import com.baseproject.model.entities.User;
 import com.baseproject.util.utils.QueryUtils;
 
@@ -25,6 +25,9 @@ public class UserFilter implements Filter<User> {
 
 	@QueryParam("profileId")
 	private Long profileId;
+
+	@QueryParam("companyId")
+	private Long companyId;
 
 	@Override
 	public TypedQuery<User> buildQuery() {
@@ -48,6 +51,11 @@ public class UserFilter implements Filter<User> {
 		if (profileId != null) {
 			hql.append(" AND e.profile.id = :profileId");
 			params.put("profileId", profileId);
+		}
+		
+		if (companyId != null) {
+			hql.append(" AND e.company.id = :companyId");
+			params.put("companyId", companyId);
 		}
 		
 		TypedQuery<User> query = MyEntityManager.get().createQuery(hql.toString(), User.class);
@@ -86,5 +94,13 @@ public class UserFilter implements Filter<User> {
 
 	public void setProfileId(Long profileId) {
 		this.profileId = profileId;
+	}
+	
+	public Long getCompanyId() {
+		return companyId;
+	}
+	
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
 	}
 }

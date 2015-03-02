@@ -22,7 +22,8 @@ import org.jboss.resteasy.annotations.Form;
 import com.baseproject.model.common.Loader;
 import com.baseproject.model.entities.User;
 import com.baseproject.model.filters.UserFilter;
-import com.baseproject.service.dtos.UserData;
+import com.baseproject.service.common.BaseService;
+import com.baseproject.service.data.UserData;
 import com.baseproject.util.validation.ValidationException;
 
 @Path(UserService.PATH)

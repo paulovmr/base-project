@@ -1,6 +1,6 @@
 package com.baseproject.util.utils;
 
-import com.baseproject.model.config.MyEntityManager;
+import com.baseproject.model.common.MyEntityManager;
 
 public class PersistenceUtils {
 

@@ -1,4 +1,4 @@
-package com.baseproject.service.services;
+package com.baseproject.service.common;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
@@ -10,7 +10,7 @@ public abstract class BaseService {
 	@Context
 	private SecurityContext securityContext;
 	
-	Token getToken() {
+	protected Token getToken() {
 		return (Token) securityContext.getUserPrincipal();
 	}
 }

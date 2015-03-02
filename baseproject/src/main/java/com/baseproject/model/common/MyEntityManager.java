@@ -1,4 +1,4 @@
-package com.baseproject.model.config;
+package com.baseproject.model.common;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

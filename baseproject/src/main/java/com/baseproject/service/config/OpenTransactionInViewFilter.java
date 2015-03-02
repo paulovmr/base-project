@@ -12,7 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletResponse;
 
-import com.baseproject.model.config.MyEntityManager;
+import com.baseproject.model.common.MyEntityManager;
 
 @WebFilter(urlPatterns = { "/api/*" })
 public class OpenTransactionInViewFilter implements Filter {
