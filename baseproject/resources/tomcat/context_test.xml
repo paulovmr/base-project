@@ -14,6 +14,7 @@
         username="baseproject"
 		password="baseproject"
 		driverClassName="org.postgresql.Driver"
-		url="jdbc:postgresql://127.0.0.1:5432/baseprojectdb"
+		url="jdbc:postgresql://127.0.0.1:5432/baseproject_test"
+		factory="org.apache.commons.dbcp.BasicDataSourceFactory"
 	/>
 </Context>
