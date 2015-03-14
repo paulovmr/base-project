@@ -21,8 +21,6 @@ import com.baseproject.util.validation.Unique;
 @Entity(name = "features")
 public class Feature extends BaseEntity<Feature> {
 	
-	private static final long serialVersionUID = 3890390287004990551L;
-
 	@Transient
 	private static final transient Repository<Feature> REPOSITORY = new Repository<Feature>(Feature.class);
 
@@ -46,17 +44,15 @@ public class Feature extends BaseEntity<Feature> {
 	
 	public Feature() {
 	}
-	
+
+	public Feature(FeatureCode code, Boolean visible) {
+		super();
+		this.code = code;
+		this.visible = visible;
+	}
+
 	public static Repository<Feature> repository() {
 		return REPOSITORY;
-	}
-
-	@Override
-	public void prepareForPersist() {
-	}
-
-	@Override
-	public void prepareForUpdate() {
 	}
 	
 	public FeatureCode getCode() {

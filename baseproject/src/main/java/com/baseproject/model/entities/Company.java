@@ -12,8 +12,6 @@ import com.baseproject.util.validation.NotEmpty;
 @Entity(name = "companies")
 public class Company extends BaseEntity<Company> {
 	
-	private static final long serialVersionUID = -6962657441501642397L;
-
 	@Transient
 	private static final transient Repository<Company> REPOSITORY = new Repository<Company>(Company.class);
 
@@ -32,14 +30,6 @@ public class Company extends BaseEntity<Company> {
 	
 	public static Repository<Company> repository() {
 		return REPOSITORY;
-	}
-
-	@Override
-	public void prepareForPersist() {
-	}
-
-	@Override
-	public void prepareForUpdate() {
 	}
 	
 	public String getCode() {

@@ -30,7 +30,9 @@ public class Repository<E extends BaseEntity<E>> {
 
 		new Validator<E>().validate(entity);
 
-        MyEntityManager.get().persist(entity);
+		if (entity.getId() == null) {
+			MyEntityManager.get().persist(entity);
+		}
         E mergedEntity = MyEntityManager.get().merge(entity);
         
         return mergedEntity;
@@ -95,9 +97,5 @@ public class Repository<E extends BaseEntity<E>> {
 
 	public TypedQuery<E> createQuery(String query) {
 		return MyEntityManager.get().createQuery(query, clazz);
-	}
-	
-	public void detach(E entity) {
-		MyEntityManager.get().detach(entity);
 	}
 }

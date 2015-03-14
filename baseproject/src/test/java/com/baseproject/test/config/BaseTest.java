@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.util.utils.DatabaseUtils;
 import com.baseproject.util.utils.ReflectionUtils;
-import com.baseproject.util.validation.ValidationException;
 
 public class BaseTest {
 	
@@ -32,20 +31,30 @@ public class BaseTest {
 		tomcat.stop();
 	}
 	
-	public <T extends BaseEntity<T>> void fetch(Class<T> clazz, Long id) {
-		browser.get(clazz, "/fixtures/" + getTableFromClass(clazz) + "/{0}", id);
+	public <T extends BaseEntity<T>> T fetch(Class<T> clazz, Long id) {
+		Response response = browser.get("/fixtures/" + getTableFromClass(clazz) + "/%d", id);
+		return response.process(clazz);
 	}
 	
-	public <T extends BaseEntity<T>> void insert(Class<T> clazz, T entity) throws ValidationException {
-		browser.post(entity, "/fixtures/" + getTableFromClass(clazz));
+	public <T extends BaseEntity<T>> Long insert(Class<T> clazz, T entity) {
+		Response response = browser.post(entity, "/fixtures/" + getTableFromClass(clazz));
+		response.process();
+		if (response.getLocation() != null) {
+			String[] path = response.getLocation().split("/");
+			return Long.parseLong(path[path.length - 1]);
+		}
+		
+		return null;
 	}
 	
-	public <T extends BaseEntity<T>> void update(Class<T> clazz, T entity) throws ValidationException {
-		browser.put(entity, "/fixtures/" + getTableFromClass(clazz) + "/{0}", entity.getId());
+	public <T extends BaseEntity<T>> void update(Class<T> clazz, T entity) {
+		Response response = browser.put(entity, "/fixtures/" + getTableFromClass(clazz) + "/%d", entity.getId());
+		response.process();
 	}
 	
 	public <T extends BaseEntity<T>> void delete(Class<T> clazz, T entity) {
-		browser.delete("/fixtures/" + getTableFromClass(clazz) + "/{0}", entity.getId());
+		Response response = browser.delete("/fixtures/" + getTableFromClass(clazz) + "/%d", entity.getId());
+		response.process();
 	}
 	
 	private <T extends BaseEntity<T>> String getTableFromClass(Class<T> clazz) {

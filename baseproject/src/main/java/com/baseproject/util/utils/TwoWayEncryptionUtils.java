@@ -68,12 +68,4 @@ public class TwoWayEncryptionUtils {
 	    
 		return cipher;
 	}
-	
-	public static void main(String[] args) {
-		String text = "Texto de testaaaaaaaaaaae";
-		System.out.println("Texto: " + text);
-		String encryptedText = encrypt(text);
-		System.out.println("Texto criptografado: " + encryptedText);
-		System.out.println("Texto descriptografado: " + decrypt(encryptedText));
-	}
 }

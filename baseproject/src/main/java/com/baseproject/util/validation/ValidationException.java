@@ -2,6 +2,7 @@ package com.baseproject.util.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class ValidationException extends Exception {
 
@@ -26,5 +27,14 @@ public class ValidationException extends Exception {
 
 	public boolean hasValidationFailures() {
 		return !validationFailures.isEmpty();
+	}
+	
+	public String getValidationErrorMessage() {
+		StringJoiner joiner = new StringJoiner(", ");
+		for (ValidationFailure vf : getValidationFailures()) {
+			joiner.add(vf.getMessage());
+		}
+		
+		return joiner.toString();
 	}
 }

@@ -1,10 +1,10 @@
 package com.baseproject.test.config;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -16,93 +16,67 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import com.baseproject.util.utils.JsonUtils;
-import com.baseproject.util.validation.ValidationException;
-import com.baseproject.util.validation.ValidationFailure;
 
 public class Browser {
 	
 	private static final String BASE_URL = "http://localhost:8081/baseproject/api";
 
-	@SuppressWarnings("unchecked")
-	public <T> List<T> getn(Class<T> clazz, String url, Object... params) {
-		try {
-			HttpGet httpGet = new HttpGet(BASE_URL + String.format(url, params));
-			String json = doRequest(httpGet, null);
-			return (List<T>) JsonUtils.fromJson(json, List.class);
-		} catch (ValidationException e) {
-			throw new RuntimeException(e);
-		}
+	public Response get(String url, Object... params) {
+		HttpGet httpGet = new HttpGet(BASE_URL + String.format(url, params));
+		return doRequest(httpGet, null);
 	}
 
-	public <T> T get(Class<T> clazz, String url, Object... params) {
-		try {
-			HttpGet httpGet = new HttpGet(BASE_URL + String.format(url, params));
-			String json = doRequest(httpGet, null);
-			return (T) JsonUtils.fromJson(json, clazz);
-		} catch (ValidationException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void post(Object entity, String url, Object... params) throws ValidationException {
+	public Response post(Object entity, String url, Object... params) {
 		HttpPost httpPost = new HttpPost(BASE_URL + String.format(url, params));		
-		doRequest(httpPost, entity);
+		return doRequest(httpPost, entity);
 	}
 
-	public void put(Object entity, String url, Object... params) throws ValidationException {
+	public Response put(Object entity, String url, Object... params) {
 		HttpPut httpPut = new HttpPut(BASE_URL + String.format(url, params));		
-		doRequest(httpPut, entity);
+		return doRequest(httpPut, entity);
 	}
 
-	public void delete(String url, Object... params) {
-		try {
-			HttpDelete httpDelete = new HttpDelete(BASE_URL + String.format(url, params));
-			doRequest(httpDelete, null);
-		} catch (ValidationException e) {
-			throw new RuntimeException(e);
-		}
+	public Response delete(String url, Object... params) {
+		HttpDelete httpDelete = new HttpDelete(BASE_URL + String.format(url, params));
+		return doRequest(httpDelete, null);
 	}
 
-	@SuppressWarnings("unchecked")
-	private String doRequest(HttpRequestBase method, Object entity) throws ValidationException {
+	private Response doRequest(HttpRequestBase method, Object entity) {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		String json = JsonUtils.toJson(entity);
 		
 		ResponseHandler<String> handler = new ResponseHandler<String>() {
             public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
-                int status = response.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300 || status == 422) {
-                    HttpEntity entity = response.getEntity();
-                    return entity != null ? EntityUtils.toString(entity) : null;
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: " + status);
-                }
+                HttpEntity entity = response.getEntity();
+                return entity != null ? EntityUtils.toString(entity) : null;
             }
         };
 		
 		try {
 			if (entity != null) {
 				method.addHeader("Content-Type", MediaType.TEXT_PLAIN);
-				HttpEntity httpEntity = new StringEntity(json);
+				HttpEntity httpEntity = new ByteArrayEntity(json.getBytes("UTF-8"));
 				((HttpEntityEnclosingRequestBase) method).setEntity(httpEntity);
 			}
 			
 			response = httpClient.execute(method);
+			
 			int code = response.getStatusLine().getStatusCode();
 			String responseEntity = handler.handleResponse(response);
+			Header location = response.getLastHeader("Location");
 		    
-		    if (code == 422) {
-		    	throw new ValidationException((List<ValidationFailure>) JsonUtils.fromJson(responseEntity, List.class));
-		    }
-		    
-		    return responseEntity;
+			if (location != null) {
+				return new Response(code, responseEntity, location.getValue());
+			} else {
+				return new Response(code, responseEntity);
+			}
 		} catch (ClientProtocolException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {

@@ -7,8 +7,7 @@ import org.junit.Test;
 import com.baseproject.model.entities.User;
 import com.baseproject.service.data.UserData;
 import com.baseproject.test.config.BaseTest;
-import com.baseproject.util.utils.JsonUtils;
-import com.baseproject.util.validation.ValidationException;
+import com.baseproject.test.config.Response;
 
 public class UserServiceTest extends BaseTest {
 
@@ -16,12 +15,9 @@ public class UserServiceTest extends BaseTest {
 	public void createUser() {
 		User u = new User();
 		u.setUsername("paulovmr");
-		try {
-			insert(User.class, u);
-		} catch (ValidationException e) {
-			System.out.println(JsonUtils.toJson(e.getValidationFailures()));
-		}
-		List<UserData> users = browser.getn(UserData.class, "/users");
+		insert(User.class, u);
+		Response response = browser.get("/users");
+		List<UserData> users = response.getEntities(UserData.class);
 		
 		for (UserData user : users) {
 			System.out.println("Usuario: " + user.getUsername());

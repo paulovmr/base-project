@@ -18,8 +18,6 @@ import com.baseproject.util.validation.Unique;
 @Entity(name = "users")
 public class User extends BaseEntity<User> {
 
-	private static final long serialVersionUID = 64264926208955788L;
-	
 	@Transient
 	private static final transient Repository<User> REPOSITORY = new Repository<User>(User.class);
 
@@ -57,11 +55,8 @@ public class User extends BaseEntity<User> {
 
 	@Override
 	public void prepareForPersist() {
+		super.prepareForPersist();
 		setPassword(OneWayEncryptionUtils.encode(password));
-	}
-
-	@Override
-	public void prepareForUpdate() {
 	}
 
 	public String encodedPassword() {

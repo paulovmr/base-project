@@ -62,14 +62,14 @@ public class FixtureService extends BaseService {
 		BaseEntity<?> obj = (BaseEntity<?>) JsonUtils.fromJson(json, clazz);
 				
 		try {
+			obj.prepareForPersist();
 			obj.save();
 		} catch (ValidationException e) {
 			return Response.status(422).entity(e.getValidationFailures()).build();
 		}
 		
-		String path = PATH.replace("{tableName}", tableName);
 		Long id = obj.getId();
-		URI location = UriBuilder.fromPath(path + "/" + id).build();
+		URI location = UriBuilder.fromPath(PATH + "/" + tableName + "/" + id).build();
 		return Response.status(200).location(location).build();
 	}
 	 
@@ -81,8 +81,8 @@ public class FixtureService extends BaseService {
 	public Response update(@PathParam("tableName") String tableName, @PathParam("id") Long id, String json) {
 		Class<?> clazz = getClassFromTable(tableName);
 		BaseEntity<?> obj = (BaseEntity<?>) JsonUtils.fromJson(json, clazz);
-				
 		try {
+			obj.prepareForUpdate();
 			obj.setId(id);
 			obj.save();
 		} catch (ValidationException e) {

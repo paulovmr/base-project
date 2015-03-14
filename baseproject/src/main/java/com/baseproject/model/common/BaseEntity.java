@@ -1,6 +1,5 @@
 package com.baseproject.model.common;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,10 +11,8 @@ import javax.persistence.MappedSuperclass;
 import com.baseproject.util.validation.ValidationException;
 
 @MappedSuperclass
-public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializable {
-
-	private static final long serialVersionUID = 5210529725033309138L;
-
+public abstract class BaseEntity<E extends BaseEntity<E>> {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -28,9 +25,13 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 	
 	public abstract Repository<E> getRepository();
 
-	public abstract void prepareForPersist();
+	public void prepareForPersist() {
+		setId(null);
+	}
 
-	public abstract void prepareForUpdate();
+	public void prepareForUpdate() {
+		
+	}
 	
 	public void updateEntity(Date date) {
 		if (getId() == null) {
@@ -42,10 +43,6 @@ public abstract class BaseEntity<E extends BaseEntity<E>> implements Serializabl
 	
 	@SuppressWarnings("unchecked")
 	public E save() throws ValidationException {
-		this.id = null;
-		this.createdAt = null;
-		this.updatedAt = null;
-
 		return getRepository().save((E) this);
     }
 

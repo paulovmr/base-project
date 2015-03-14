@@ -19,8 +19,6 @@ import com.baseproject.util.validation.NotEmpty;
 @Entity(name = "profiles")
 public class Profile extends BaseEntity<Profile> {
 	
-	private static final long serialVersionUID = 5967586459179347457L;
-
 	@Transient
 	private static final transient Repository<Profile> REPOSITORY = new Repository<Profile>(Profile.class);
 
@@ -42,14 +40,6 @@ public class Profile extends BaseEntity<Profile> {
 	
 	public static Repository<Profile> repository() {
 		return REPOSITORY;
-	}
-
-	@Override
-	public void prepareForPersist() {
-	}
-
-	@Override
-	public void prepareForUpdate() {
 	}
 	
 	public String getName() {
