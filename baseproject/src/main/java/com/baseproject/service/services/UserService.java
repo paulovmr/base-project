@@ -59,6 +59,7 @@ public class UserService extends BaseService {
 	@Path("/")
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response createUser(UserData userData) {
 		User user = UserData.build(userData);
 		

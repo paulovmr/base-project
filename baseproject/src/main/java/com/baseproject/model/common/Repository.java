@@ -56,8 +56,9 @@ public class Repository<E extends BaseEntity<E>> {
         if (conditions != null) {
 	        int i = 0;
 	       	for (Condition condition : conditions.getConditions()) {
-	        	hql.append(" AND " + condition.getField() + " " + condition.getOperator() + " :value" + i++);
-	        	params.put("value" + i++, condition.getValue());
+	        	hql.append(" AND " + condition.getField() + " " + condition.getOperator() + " :value" + i);
+	        	params.put("value" + i, condition.getValue());
+	        	i++;
 	       	}
         }
        	

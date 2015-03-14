@@ -1,41 +1,30 @@
 package com.baseproject.service.services;
 
-import java.io.IOException;
+import java.util.List;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
 
+import com.baseproject.model.entities.User;
+import com.baseproject.service.data.UserData;
 import com.baseproject.test.config.BaseTest;
+import com.baseproject.util.utils.JsonUtils;
+import com.baseproject.util.validation.ValidationException;
 
 public class UserServiceTest extends BaseTest {
 
 	@Test
-	public void test() {
-		CloseableHttpClient httpClient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet("http://localhost:8081/baseproject/api/users");
-		CloseableHttpResponse response = null;
-		
+	public void createUser() {
+		User u = new User();
+		u.setUsername("paulovmr");
 		try {
-			response = httpClient.execute(httpGet);
-		    System.out.println(response.getEntity().toString());
-		} catch (ClientProtocolException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (response != null) {
-				try {
-					response.close();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
+			insert(User.class, u);
+		} catch (ValidationException e) {
+			System.out.println(JsonUtils.toJson(e.getValidationFailures()));
 		}
+		List<UserData> users = browser.getn(UserData.class, "/users");
 		
-		System.out.println("Test runned!");
+		for (UserData user : users) {
+			System.out.println("Usuario: " + user.getUsername());
+		}
 	}
 }
