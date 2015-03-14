@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriBuilder;
 import com.baseproject.model.common.BaseEntity;
 import com.baseproject.model.common.Repository;
 import com.baseproject.service.common.BaseService;
+import com.baseproject.util.utils.DatabaseUtils;
 import com.baseproject.util.utils.JsonUtils;
 import com.baseproject.util.utils.ReflectionUtils;
 import com.baseproject.util.validation.ValidationException;
@@ -38,10 +39,7 @@ public class FixtureService extends BaseService {
 				
 		try {
 			Method m = clazz.getMethod("repository");
-			
-			@SuppressWarnings("rawtypes")
-			Repository<?> repository = (Repository) m.invoke(null);
-			
+			Repository<?> repository = (Repository<?>) m.invoke(null);
 			obj = repository.fetch(id);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -103,10 +101,7 @@ public class FixtureService extends BaseService {
 		
 		try {
 			Method m = clazz.getMethod("repository");
-			
-			@SuppressWarnings("rawtypes")
-			Repository<?> repository = (Repository) m.invoke(null);
-			
+			Repository<?> repository = (Repository<?>) m.invoke(null);
 			obj = repository.fetch(id);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -124,7 +119,7 @@ public class FixtureService extends BaseService {
 	@Path("/")
 	@PermitAll
 	public Response deleteAll() {
-		//DatabaseTestUtils.cleanAllTables();
+		DatabaseUtils.cleanAllTables();
 		return Response.status(200).build();
 	}
 	

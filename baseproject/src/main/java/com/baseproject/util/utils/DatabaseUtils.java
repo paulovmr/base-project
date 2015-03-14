@@ -1,4 +1,4 @@
-package com.baseproject.test.config;
+package com.baseproject.util.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.StringJoiner;
 
-public class DatabaseTestUtils {
+public class DatabaseUtils {
 	
 	private static final String DB_CONNECTION_URL = "jdbc:postgresql://127.0.0.1:5432/baseproject_test";
 	private static final String DB_USERNAME = "baseproject";

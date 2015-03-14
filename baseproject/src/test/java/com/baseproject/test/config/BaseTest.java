@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import com.baseproject.model.common.BaseEntity;
+import com.baseproject.util.utils.DatabaseUtils;
 import com.baseproject.util.utils.ReflectionUtils;
 import com.baseproject.util.validation.ValidationException;
 
@@ -16,14 +17,14 @@ public class BaseTest {
 	
 	@BeforeClass
 	public static void setupSuite() {
-		DatabaseTestUtils.dropAllTables();
+		DatabaseUtils.dropAllTables();
 		tomcat = new TomcatEmbeddedRunner();
 		tomcat.start();
 	}
 	
 	@Before
 	public void setupTest() {
-		DatabaseTestUtils.cleanAllTables();
+		DatabaseUtils.cleanAllTables();
 	}
 	
 	@AfterClass
