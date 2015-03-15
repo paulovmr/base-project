@@ -1,5 +1,7 @@
 package com.baseproject.test.config;
 
+import javax.ws.rs.core.MediaType;
+
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -37,7 +39,7 @@ public class BaseTest {
 	}
 	
 	public <T extends BaseEntity<T>> Long insert(Class<T> clazz, T entity) {
-		Response response = browser.post(entity, "/fixtures/" + getTableFromClass(clazz));
+		Response response = browser.post(MediaType.TEXT_PLAIN, entity, "/fixtures/" + getTableFromClass(clazz));
 		response.process();
 		if (response.getLocation() != null) {
 			String[] path = response.getLocation().split("/");
@@ -48,7 +50,7 @@ public class BaseTest {
 	}
 	
 	public <T extends BaseEntity<T>> void update(Class<T> clazz, T entity) {
-		Response response = browser.put(entity, "/fixtures/" + getTableFromClass(clazz) + "/%d", entity.getId());
+		Response response = browser.put(MediaType.TEXT_PLAIN, entity, "/fixtures/" + getTableFromClass(clazz) + "/%d", entity.getId());
 		response.process();
 	}
 	

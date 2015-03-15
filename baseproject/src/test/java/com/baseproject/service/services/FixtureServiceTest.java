@@ -12,14 +12,14 @@ public class FixtureServiceTest extends BaseTest {
 
 	@Test
 	public void createAndFetch() {
-		Long id = insert(Feature.class, FeatureFixture.CREATE_COMPANY.get());
+		Long id = insert(Feature.class, FeatureFixture.CREATE_COMPANY.entity());
 		Feature feature = fetch(Feature.class, id);
 		Assert.assertTrue(FeatureFixture.CREATE_COMPANY.equivalent(feature));
 	}
 
 	@Test
 	public void updateAndFetch() {
-		Feature feature = FeatureFixture.CREATE_COMPANY.get();
+		Feature feature = FeatureFixture.CREATE_COMPANY.entity();
 		Long id = insert(Feature.class, feature);
 		feature = fetch(Feature.class, id);
 		
@@ -31,15 +31,64 @@ public class FixtureServiceTest extends BaseTest {
 		Assert.assertEquals(updatedFeature.getVisible(), true);
 	}
 
-	@Test(expected = ResponseError.class)
+	@Test
 	public void deleteAndFetch() {
-		Feature feature = FeatureFixture.CREATE_COMPANY.get();
+		Feature feature = FeatureFixture.CREATE_COMPANY.entity();
 		Long id = insert(Feature.class, feature);
 		feature = fetch(Feature.class, id);
 		
 		feature.setVisible(true);
 		delete(Feature.class, feature);
 
+		try {
+			fetch(Feature.class, id);
+		} catch (ResponseError e) {
+			Assert.assertEquals(404, e.getResponse().getCode());
+		}
+	}
+
+	@Test
+	public void fetchUnexistent() {
+		try {
+			fetch(Feature.class, 999l);
+		} catch (ResponseError e) {
+			Assert.assertEquals(404, e.getResponse().getCode());
+		}
+	}
+
+	@Test
+	public void updateUnexistent() {
+		Feature feature = FeatureFixture.CREATE_COMPANY.entity();
+		
+		try {
+			update(Feature.class, feature);
+		} catch (ResponseError e) {
+			Assert.assertEquals(404, e.getResponse().getCode());
+		}
+	}
+
+	@Test
+	public void deleteUnexistent() {
+		Feature feature = FeatureFixture.CREATE_COMPANY.entity();
+		
+		try {
+			delete(Feature.class, feature);
+		} catch (ResponseError e) {
+			Assert.assertEquals(404, e.getResponse().getCode());
+		}
+	}
+
+	@Test
+	public void deleteAll() {
+		Long id = insert(Feature.class, FeatureFixture.CREATE_COMPANY.entity());
 		fetch(Feature.class, id);
+		
+		browser.delete("/fixtures");
+		
+		try {
+			fetch(Feature.class, id);
+		} catch (ResponseError e) {
+			Assert.assertEquals(404, e.getResponse().getCode());
+		}
 	}
 }

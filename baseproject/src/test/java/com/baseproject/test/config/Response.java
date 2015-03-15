@@ -50,7 +50,7 @@ public class Response {
 	
 	public void process() {
 		if (!isSuccess()) {
-			throw new ResponseError("Request failed with code " + getCode() + ". Http entity: " + getEntity());
+			throw new ResponseError(this);
 		}
 	}
 	

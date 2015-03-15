@@ -28,26 +28,42 @@ public class Browser {
 	private static final String BASE_URL = "http://localhost:8081/baseproject/api";
 
 	public Response get(String url, Object... params) {
-		HttpGet httpGet = new HttpGet(BASE_URL + String.format(url, params));
-		return doRequest(httpGet, null);
+		HttpGet httpGet = new HttpGet(buildURL(url, params));
+		return doRequest(httpGet, null, null);
 	}
 
 	public Response post(Object entity, String url, Object... params) {
-		HttpPost httpPost = new HttpPost(BASE_URL + String.format(url, params));		
-		return doRequest(httpPost, entity);
+		return post(MediaType.APPLICATION_JSON, entity, url, params);
 	}
 
 	public Response put(Object entity, String url, Object... params) {
-		HttpPut httpPut = new HttpPut(BASE_URL + String.format(url, params));		
-		return doRequest(httpPut, entity);
+		return put(MediaType.APPLICATION_JSON, entity, url, params);
 	}
 
 	public Response delete(String url, Object... params) {
-		HttpDelete httpDelete = new HttpDelete(BASE_URL + String.format(url, params));
-		return doRequest(httpDelete, null);
+		HttpDelete httpDelete = new HttpDelete(buildURL(url, params));
+		return doRequest(httpDelete, null, null);
 	}
 
-	private Response doRequest(HttpRequestBase method, Object entity) {
+	public Response post(String contentType, Object entity, String url, Object... params) {
+		HttpPost httpPost = new HttpPost(buildURL(url, params));		
+		return doRequest(httpPost, entity, contentType);
+	}
+
+	public Response put(String contentType, Object entity, String url, Object... params) {
+		HttpPut httpPut = new HttpPut(buildURL(url, params));		
+		return doRequest(httpPut, entity, contentType);
+	}
+
+	private String buildURL(String url, Object... params) {
+		if (url.startsWith("http")) {
+			return String.format(url, params);
+		}
+		
+		return BASE_URL + String.format(url, params);
+	}
+
+	private Response doRequest(HttpRequestBase method, Object entity, String contentType) {
 		CloseableHttpClient httpClient = HttpClients.createDefault();
 		CloseableHttpResponse response = null;
 		String json = JsonUtils.toJson(entity);
@@ -61,7 +77,7 @@ public class Browser {
 		
 		try {
 			if (entity != null) {
-				method.addHeader("Content-Type", MediaType.TEXT_PLAIN);
+				method.addHeader("Content-Type", contentType);
 				HttpEntity httpEntity = new ByteArrayEntity(json.getBytes("UTF-8"));
 				((HttpEntityEnclosingRequestBase) method).setEntity(httpEntity);
 			}

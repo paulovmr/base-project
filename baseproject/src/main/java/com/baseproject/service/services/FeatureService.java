@@ -20,36 +20,37 @@ import javax.ws.rs.core.UriBuilder;
 import org.jboss.resteasy.annotations.Form;
 
 import com.baseproject.model.common.Loader;
-import com.baseproject.model.entities.User;
-import com.baseproject.model.filters.UserFilter;
+import com.baseproject.model.entities.Feature;
+import com.baseproject.model.filters.FeatureFilter;
 import com.baseproject.service.common.BaseService;
-import com.baseproject.service.data.UserData;
+import com.baseproject.service.data.FeatureData;
 import com.baseproject.util.validation.ValidationException;
 
-@Path(UserService.PATH)
-public class UserService extends BaseService {
+@Path(FeatureService.PATH)
+public class FeatureService extends BaseService {
 	
-	public static final String PATH = "/users";
+	public static final String PATH = "/features";
 
 	@GET
 	@Path("/")
 	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response searchUsers(@Form UserFilter userFilter) {
-		List<User> users = User.repository().list(userFilter);
+	public Response searchFeatures(@Form FeatureFilter featureFilter) {
+		featureFilter.setVisible(true);
+		List<Feature> features = Feature.repository().list(featureFilter);
 		
-		return Response.status(200).entity(UserData.unbuild(users)).build();
+		return Response.status(200).entity(FeatureData.unbuild(features)).build();
 	}
 	 
 	@GET
 	@Path("/{id}")
 	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response fetchUser(@PathParam("id") Long id, @QueryParam("load") String fields) {
-		User user = User.repository().fetch(id, Loader.load(fields, User.class));
+	public Response fetchFeature(@PathParam("id") Long id, @QueryParam("load") String fields) {
+		Feature feature = Feature.repository().fetch(id, Loader.load(fields, Feature.class));
 		
-		if (user != null) {
-			return Response.status(200).entity(UserData.unbuild(user)).build();
+		if (feature != null) {
+			return Response.status(200).entity(FeatureData.unbuild(feature)).build();
 		} else {
 			return Response.status(404).build();
 		}
@@ -60,17 +61,17 @@ public class UserService extends BaseService {
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createUser(UserData userData) {
-		User user = UserData.build(userData);
+	public Response createFeature(FeatureData featureData) {
+		Feature feature = FeatureData.build(featureData);
 		
 		try {
-			user.prepareForPersist();
-			user = user.save();
+			feature.prepareForPersist();
+			feature = feature.save();
 		} catch (ValidationException e) {
 			return Response.status(422).entity(e.getValidationFailures()).build();
 		}
 		
-		URI location = UriBuilder.fromPath(PATH + "/" + user.getId()).build();
+		URI location = UriBuilder.fromPath(PATH + "/" + feature.getId()).build();
 		return Response.status(201).location(location).build();
 	}
 	 
@@ -78,13 +79,13 @@ public class UserService extends BaseService {
 	@Path("/{id}")
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updateUser(@PathParam("id") Long id, UserData userData) {
-		User user = UserData.build(userData);
+	public Response updateFeature(@PathParam("id") Long id, FeatureData featureData) {
+		Feature feature = FeatureData.build(featureData);
 		
 		try {
-			user.setId(id);
-			user.prepareForUpdate();
-			user = user.save();
+			feature.setId(id);
+			feature.prepareForUpdate();
+			feature = feature.save();
 		} catch (ValidationException e) {
 			return Response.status(422).entity(e.getValidationFailures()).build();
 		}
@@ -95,11 +96,11 @@ public class UserService extends BaseService {
 	@DELETE
 	@Path("/{id}")
 	@PermitAll
-	public Response deleteUser(@PathParam("id") Long id) {
-		User user = User.repository().fetch(id);
+	public Response deleteFeature(@PathParam("id") Long id) {
+		Feature feature = Feature.repository().fetch(id);
 		
-		if (user != null) {
-			user.remove();
+		if (feature != null) {
+			feature.remove();
 		} else {
 			return Response.status(404).build();
 		}

@@ -70,7 +70,7 @@ public class FixtureService extends BaseService {
 		
 		Long id = obj.getId();
 		URI location = UriBuilder.fromPath(PATH + "/" + tableName + "/" + id).build();
-		return Response.status(200).location(location).build();
+		return Response.status(201).location(location).build();
 	}
 	 
 	@PUT

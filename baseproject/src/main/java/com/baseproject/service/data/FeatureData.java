@@ -16,6 +16,9 @@ public class FeatureData {
 	private Boolean visible;
 	
 	private List<ProfileData> profiles;
+	
+	public FeatureData() {
+	}
 
 	public FeatureData(Feature feature) {
 		this.id = feature.getId();
@@ -25,6 +28,16 @@ public class FeatureData {
 		if (PersistenceUtils.isLoaded(feature.getProfiles())) {			
 			this.profiles = feature.getProfiles().stream().map(p -> new ProfileData(p)).collect(Collectors.toList());
 		}
+	}
+	
+	public static FeatureData buildForTest(Feature feature) {
+		FeatureData featureData = new FeatureData();
+		
+		featureData.setId(feature.getId());
+		featureData.setCode(feature.getCode());
+		featureData.setVisible(feature.getVisible());
+		
+		return featureData;
 	}
 
 	public static List<Feature> fetch(List<FeatureData> featureDatas) {
