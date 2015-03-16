@@ -43,7 +43,7 @@ public class Repository<E extends BaseEntity<E>> {
 	}
 
 	public E fetch(final Long id, String... loads) {
-        return fetch(Conditions.create(), loads);
+        return fetch(Conditions.create().and("id", "=", id), loads);
     }
 
 	public E fetch(Conditions conditions, String... loads) {

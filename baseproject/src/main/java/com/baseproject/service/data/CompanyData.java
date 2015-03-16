@@ -10,10 +10,22 @@ public class CompanyData {
 	private Long id;
 	
 	private String name;
+	
+	public CompanyData() {
+	}
 
 	public CompanyData(Company company) {
 		this.id = company.getId();
 		this.name = company.getName();
+	}
+
+	public static CompanyData buildForTest(Company company) {
+		CompanyData companyData = new CompanyData();
+		
+		companyData.setId(company.getId());
+		companyData.setName(company.getName());
+		
+		return companyData;
 	}
 
 	public static List<Company> fetch(List<CompanyData> companyDatas) {

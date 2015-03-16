@@ -80,7 +80,22 @@ public class FixtureService extends BaseService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response update(@PathParam("tableName") String tableName, @PathParam("id") Long id, String json) {
 		Class<?> clazz = getClassFromTable(tableName);
-		BaseEntity<?> obj = (BaseEntity<?>) JsonUtils.fromJson(json, clazz);
+		BaseEntity<?> obj;
+		
+		try {
+			Method m = clazz.getMethod("repository");
+			Repository<?> repository = (Repository<?>) m.invoke(null);
+			obj = repository.fetch(id);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+		if (obj == null) {
+			return Response.status(404).build();
+		}
+		
+		obj = (BaseEntity<?>) JsonUtils.fromJson(json, clazz);
+		
 		try {
 			obj.prepareForUpdate();
 			obj.setId(id);

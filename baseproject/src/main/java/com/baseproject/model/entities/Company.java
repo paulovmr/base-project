@@ -28,6 +28,12 @@ public class Company extends BaseEntity<Company> {
 	public Company() {
 	}
 	
+	public Company(String code, String name) {
+		super();
+		this.code = code;
+		this.name = name;
+	}
+
 	public static Repository<Company> repository() {
 		return REPOSITORY;
 	}

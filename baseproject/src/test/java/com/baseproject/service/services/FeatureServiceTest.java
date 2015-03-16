@@ -12,10 +12,19 @@ public class FeatureServiceTest extends BaseTest {
 
 	@Test
 	public void createFeature() {
-		Response create = browser.post(FeatureFixture.CREATE_COMPANY.data(), "/features");
-		Response fetch = browser.get(create.getLocation());
+		Response createResponse = browser.post(FeatureFixture.CREATE_COMPANY.data(), "/features");
+		Response fetchResponse = browser.get(createResponse.getLocation());
 		
-		Feature persistedFeature = fetch.getEntity(Feature.class);
+		Feature persistedFeature = fetchResponse.getEntity(Feature.class);
+		Assert.assertTrue(FeatureFixture.CREATE_COMPANY.equivalent(persistedFeature));
+	}
+
+	@Test
+	public void updateFeature() {
+		Response createResponse = browser.post(FeatureFixture.CREATE_COMPANY.data(), "/features");
+		Response fetchResponse = browser.get(createResponse.getLocation());
+		
+		Feature persistedFeature = fetchResponse.getEntity(Feature.class);
 		Assert.assertTrue(FeatureFixture.CREATE_COMPANY.equivalent(persistedFeature));
 	}
 }
