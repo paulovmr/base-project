@@ -10,7 +10,7 @@ die () {
 ROOT_DIRECTORY=$(pwd)
 
 # Application files
-cd $ROOT_DIRECTORY/implementation/
+cd $ROOT_DIRECTORY/baseproject/
 shopt -s globstar
 rename -v "s/baseproject/$1/" **
 find . -type f -exec sed -i "s,baseproject,$1,g" {} \;
