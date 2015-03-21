@@ -10,7 +10,7 @@ import com.baseproject.model.entities.Feature;
 import com.baseproject.test.config.BaseTest;
 import com.baseproject.util.http.ResponseError;
 
-public class FixtureServiceTest extends BaseTest {
+public class FixtureServiceIT extends BaseTest {
 
 	@Test
 	public void createAndFetchEntity() {

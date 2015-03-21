@@ -9,7 +9,7 @@ import com.baseproject.service.data.FeatureData;
 import com.baseproject.test.config.BaseTest;
 import com.baseproject.util.http.ResponseError;
 
-public class FeatureServiceTest extends BaseTest {
+public class FeatureServiceIT extends BaseTest {
 
 	@Test
 	public void createFeature() {

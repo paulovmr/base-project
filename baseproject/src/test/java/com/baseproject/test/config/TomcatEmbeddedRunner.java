@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
+import org.apache.catalina.LifecycleState;
 import org.apache.catalina.startup.Tomcat;
 
 public class TomcatEmbeddedRunner {
@@ -35,7 +36,10 @@ public class TomcatEmbeddedRunner {
 
 	public void stop() {
 		try {
-			tomcat.stop();
+			if (tomcat.getServer() != null && tomcat.getServer().getState() != LifecycleState.DESTROYED && tomcat.getServer().getState() != LifecycleState.STOPPED) {
+        		tomcat.stop();
+	        }
+	        tomcat.destroy();
 		} catch (LifecycleException e) {
 			throw new RuntimeException(e);
 		}

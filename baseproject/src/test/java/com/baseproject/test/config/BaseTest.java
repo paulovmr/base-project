@@ -1,14 +1,14 @@
 package com.baseproject.test.config;
 
-import org.junit.Before;
+import org.junit.Rule;
 
 import com.baseproject.util.http.Browser;
 import com.baseproject.util.http.Response;
-import com.baseproject.util.utils.DatabaseUtils;
 import com.baseproject.util.utils.FixtureUtils;
 
-//@RunWith(TestRunner.class)
 public abstract class BaseTest {
+	
+    @Rule public TestResultHandler testWatcher = new TestResultHandler();
 	
 	protected Browser browser = new Browser();
 	
@@ -18,11 +18,5 @@ public abstract class BaseTest {
 	
 	protected Response lastResponse() {
 		return browser.lastResponse();
-	}
-	
-	@Before
-	public void testFinished() {
-		System.out.println("============= begin3");
-		DatabaseUtils.cleanAllTables();
 	}
 }

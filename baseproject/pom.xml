@@ -190,9 +190,23 @@
                 <version>2.18.1</version>
                 <configuration>
                     <includes>
-                        <include>**/TestsSuite.class</include>
+                        <include>**/*Test.class</include>
                     </includes>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <phase>integration-test</phase>
+                        <configuration>
+                            <includes>
+                                <include>**/IntegrationTestsSuite.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             
         </plugins>
