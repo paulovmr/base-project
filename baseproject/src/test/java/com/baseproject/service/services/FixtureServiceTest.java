@@ -8,130 +8,139 @@ import com.baseproject.fixtures.FeatureFixture;
 import com.baseproject.model.entities.Company;
 import com.baseproject.model.entities.Feature;
 import com.baseproject.test.config.BaseTest;
-import com.baseproject.test.config.ResponseError;
+import com.baseproject.util.http.ResponseError;
 
 public class FixtureServiceTest extends BaseTest {
 
 	@Test
-	public void createAndFetch() {
-		Long id = insert(Feature.class, FeatureFixture.CREATE_COMPANY.entity());
-		Feature feature = fetch(Feature.class, id);
+	public void createAndFetchEntity() {
+		id = fx.insert(FeatureFixture.CREATE_COMPANY.entity());
+		Feature feature = fx.fetch(Feature.class, id);
 		Assert.assertTrue(FeatureFixture.CREATE_COMPANY.equivalent(feature));
 	}
 
 	@Test
-	public void updateAndFetch() {
+	public void updateAndFetchEntity() {
 		Feature feature = FeatureFixture.CREATE_COMPANY.entity();
-		Long id = insert(Feature.class, feature);
-		feature = fetch(Feature.class, id);
+		
+		id = fx.insert(feature);
+		feature = fx.fetch(Feature.class, id);
 		
 		feature.setVisible(true);
-		update(Feature.class, feature);
+		fx.update(feature);
 
-		Feature updatedFeature = fetch(Feature.class, id);
+		Feature updatedFeature = fx.fetch(Feature.class, feature.getId());
 		
 		Assert.assertEquals(updatedFeature.getVisible(), true);
 	}
 
 	@Test
-	public void deleteAndFetch() {
+	public void deleteAndFetchEntity() {
 		Feature feature = FeatureFixture.CREATE_COMPANY.entity();
-		Long id = insert(Feature.class, feature);
-		feature = fetch(Feature.class, id);
 		
-		feature.setVisible(true);
-		delete(Feature.class, feature);
+		id = fx.insert(feature);
+		feature = fx.fetch(Feature.class, id);
+		
+		fx.delete(feature);
 
 		try {
-			fetch(Feature.class, id);
+			fx.fetch(Feature.class, id);
+			Assert.fail();
 		} catch (ResponseError e) {
-			Assert.assertEquals(404, e.getResponse().getCode());
+			Assert.assertTrue(lastResponse().notFound());
 		}
 	}
 
 	@Test
-	public void createWithValidationError() {
+	public void createEntityWithValidationError() {
 		Feature feature = FeatureFixture.CREATE_COMPANY_INVALID.entity();
 		
 		try {
-			insert(Feature.class, feature);
+			id = fx.insert(feature);
+			Assert.fail();
 		} catch (ResponseError e) {
-			Assert.assertEquals(422, e.getResponse().getCode());
+			Assert.assertTrue(lastResponse().validationError());
 		}
 	}
 
 	@Test
-	public void updateWithValidationError() {
+	public void updateEntityWithValidationError() {
 		Feature feature = FeatureFixture.CREATE_COMPANY.entity();
-		Long id = insert(Feature.class, feature);
+		id = fx.insert(feature);
 		
-		feature = fetch(Feature.class, id);
+		feature = FeatureFixture.CREATE_COMPANY_INVALID.entity();
 		feature.setId(id);
 		
 		try {
-			update(Feature.class, feature);
+			fx.update(feature);
+			Assert.fail();
 		} catch (ResponseError e) {
-			Assert.assertEquals(422, e.getResponse().getCode());
+			Assert.assertTrue(lastResponse().validationError());
 		}
 	}
 
 	@Test
-	public void fetchUnexistent() {
+	public void fetchUnexistentEntity() {
 		try {
-			fetch(Feature.class, 999l);
+			fx.fetch(Feature.class, 999l);
+			Assert.fail();
 		} catch (ResponseError e) {
-			Assert.assertEquals(404, e.getResponse().getCode());
+			Assert.assertTrue(lastResponse().notFound());
 		}
 	}
 
 	@Test
-	public void updateUnexistent() {
-		Long id = insert(Feature.class, FeatureFixture.CREATE_COMPANY.entity());
-		Feature feature = fetch(Feature.class, id);
+	public void updateUnexistentEntity() {
+		id = fx.insert(FeatureFixture.CREATE_COMPANY.entity());
+		Feature feature = fx.fetch(Feature.class, id);
 		
 		feature.setId(999l);
 		
 		try {
-			update(Feature.class, feature);
+			fx.update(feature);
+			Assert.fail();
 		} catch (ResponseError e) {
-			Assert.assertEquals(404, e.getResponse().getCode());
+			Assert.assertTrue(lastResponse().notFound());
 		}
 	}
 
 	@Test
-	public void deleteUnexistent() {
-		Long id = insert(Feature.class, FeatureFixture.CREATE_COMPANY.entity());
-		Feature feature = fetch(Feature.class, id);
+	public void deleteUnexistentEntity() {
+		id = fx.insert(FeatureFixture.CREATE_COMPANY.entity());
+		Feature feature = fx.fetch(Feature.class, id);
 		
 		feature.setId(999l);
 		
 		try {
-			delete(Feature.class, feature);
+			fx.delete(feature);
+			Assert.fail();
 		} catch (ResponseError e) {
-			Assert.assertEquals(404, e.getResponse().getCode());
+			Assert.assertTrue(lastResponse().notFound());
 		}
 	}
 
 	@Test
-	public void deleteAll() {
-		Long featureId = insert(Feature.class, FeatureFixture.CREATE_COMPANY.entity());
-		fetch(Feature.class, featureId);
+	public void deleteAllEntities() {
+		Long featureId = fx.insert(FeatureFixture.CREATE_COMPANY.entity());
+		fx.fetch(Feature.class, featureId);
 
-		Long companyId = insert(Company.class, CompanyFixture.ACME.entity());
-		fetch(Company.class, companyId);
+		Long companyId = fx.insert(CompanyFixture.ACME.entity());
+		fx.fetch(Company.class, companyId);
 		
 		browser.delete("/fixtures");
 		
 		try {
-			fetch(Feature.class, featureId);
+			fx.fetch(Feature.class, featureId);
+			Assert.fail();
 		} catch (ResponseError e) {
-			Assert.assertEquals(404, e.getResponse().getCode());
+			Assert.assertTrue(lastResponse().notFound());
 		}
 		
 		try {
-			fetch(Company.class, companyId);
+			fx.fetch(Company.class, companyId);
+			Assert.fail();
 		} catch (ResponseError e) {
-			Assert.assertEquals(404, e.getResponse().getCode());
+			Assert.assertTrue(lastResponse().notFound());
 		}
 	}
 }

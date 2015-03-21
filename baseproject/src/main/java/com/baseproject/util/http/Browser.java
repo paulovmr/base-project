@@ -1,4 +1,4 @@
-package com.baseproject.test.config;
+package com.baseproject.util.http;
 
 import java.io.IOException;
 
@@ -26,6 +26,8 @@ import com.baseproject.util.utils.JsonUtils;
 public class Browser {
 	
 	private static final String BASE_URL = "http://localhost:8081/baseproject/api";
+	
+	private Response lastResponse;
 
 	public Response get(String url, Object... params) {
 		HttpGet httpGet = new HttpGet(buildURL(url, params));
@@ -89,10 +91,12 @@ public class Browser {
 			Header location = response.getLastHeader("Location");
 		    
 			if (location != null) {
-				return new Response(code, responseEntity, location.getValue());
+				lastResponse = new Response(code, responseEntity, location.getValue());
 			} else {
-				return new Response(code, responseEntity);
+				lastResponse = new Response(code, responseEntity);
 			}
+			
+			return lastResponse;
 		} catch (ClientProtocolException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -112,5 +116,9 @@ public class Browser {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+	
+	public Response lastResponse() {
+		return lastResponse;
 	}
 }

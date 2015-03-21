@@ -29,8 +29,9 @@ public abstract class BaseEntity<E extends BaseEntity<E>> {
 		setId(null);
 	}
 
-	public void prepareForUpdate() {
-		
+	public void prepareForUpdate(E persistedEntity) {
+		setId(persistedEntity.getId());
+		setCreatedAt(persistedEntity.getCreatedAt());
 	}
 	
 	public void updateEntity(Date date) {
@@ -100,5 +101,9 @@ public abstract class BaseEntity<E extends BaseEntity<E>> {
 	
 	public Date getCreatedAt() {
 		return createdAt;
+	}
+	
+	void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 }

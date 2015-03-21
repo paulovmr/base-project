@@ -78,12 +78,18 @@ public class UserService extends BaseService {
 	@Path("/{id}")
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateUser(@PathParam("id") Long id, UserData userData) {
+		User persistedUser = User.repository().fetch(id);
+		
+		if (persistedUser == null) {
+			return Response.status(404).build();
+		}
+
 		User user = UserData.build(userData);
 		
 		try {
-			user.setId(id);
-			user.prepareForUpdate();
+			user.prepareForUpdate(persistedUser);
 			user = user.save();
 		} catch (ValidationException e) {
 			return Response.status(422).entity(e.getValidationFailures()).build();
@@ -95,6 +101,7 @@ public class UserService extends BaseService {
 	@DELETE
 	@Path("/{id}")
 	@PermitAll
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteUser(@PathParam("id") Long id) {
 		User user = User.repository().fetch(id);
 		

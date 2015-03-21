@@ -1,4 +1,5 @@
-package com.baseproject.test.config;
+package com.baseproject.util.http;
+
 
 public class ResponseError extends RuntimeException {
 

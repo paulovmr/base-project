@@ -1,4 +1,4 @@
-package com.baseproject.test.config;
+package com.baseproject.util.http;
 
 import java.util.List;
 
@@ -34,6 +34,15 @@ public class Response {
 	public String getLocation() {
 		return location;
 	}
+	
+	public Long getId() {
+		if (getLocation() != null) {
+			String[] path = getLocation().split("/");
+			return Long.parseLong(path[path.length - 1]);
+		}
+		
+		return null;
+	}
 
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getEntities(Class<T> clazz) {
@@ -57,5 +66,25 @@ public class Response {
 	public <T> T process(Class<T> clazz) {
 		process();
 		return getEntity(clazz);
+	}
+	
+	public boolean hasLocation() {
+		return location != null;
+	}
+	
+	public boolean ok() {
+		return code == 200;
+	}
+	
+	public boolean created() {
+		return code == 201;
+	}
+	
+	public boolean validationError() {
+		return code == 422;
+	}
+	
+	public boolean notFound() {
+		return code == 404;
 	}
 }

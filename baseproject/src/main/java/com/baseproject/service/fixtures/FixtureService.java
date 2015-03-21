@@ -1,4 +1,4 @@
-package com.baseproject.service.services;
+package com.baseproject.service.fixtures;
 
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -73,33 +73,33 @@ public class FixtureService extends BaseService {
 		return Response.status(201).location(location).build();
 	}
 	 
+	@SuppressWarnings("unchecked")
 	@PUT
 	@Path("/{tableName}/{id}")
 	@PermitAll
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response update(@PathParam("tableName") String tableName, @PathParam("id") Long id, String json) {
-		Class<?> clazz = getClassFromTable(tableName);
-		BaseEntity<?> obj;
+	public <T extends BaseEntity<T>> Response update(@PathParam("tableName") String tableName, @PathParam("id") Long id, String json) {
+		Class<T> clazz = (Class<T>) getClassFromTable(tableName);
+		T persistedEntity;
 		
 		try {
 			Method m = clazz.getMethod("repository");
-			Repository<?> repository = (Repository<?>) m.invoke(null);
-			obj = repository.fetch(id);
+			Repository<T> repository = (Repository<T>) m.invoke(null);
+			persistedEntity = repository.fetch(id);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		
-		if (obj == null) {
+		if (persistedEntity == null) {
 			return Response.status(404).build();
 		}
 		
-		obj = (BaseEntity<?>) JsonUtils.fromJson(json, clazz);
+		T entity = JsonUtils.fromJson(json, clazz);
 		
 		try {
-			obj.prepareForUpdate();
-			obj.setId(id);
-			obj.save();
+			entity.prepareForUpdate(persistedEntity);
+			entity.save();
 		} catch (ValidationException e) {
 			return Response.status(422).entity(e.getValidationFailures()).build();
 		}

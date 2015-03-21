@@ -16,7 +16,7 @@ public enum FeatureFixture {
 	}
 	
 	public Feature entity() {
-		return this.feature;
+		return FeatureData.build(data());
 	}
 	
 	public FeatureData data() {

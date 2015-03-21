@@ -36,7 +36,6 @@ public class FeatureService extends BaseService {
 	@PermitAll
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response searchFeatures(@Form FeatureFilter featureFilter) {
-		featureFilter.setVisible(true);
 		List<Feature> features = Feature.repository().list(featureFilter);
 		
 		return Response.status(200).entity(FeatureData.unbuild(features)).build();
@@ -79,12 +78,18 @@ public class FeatureService extends BaseService {
 	@Path("/{id}")
 	@PermitAll
 	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateFeature(@PathParam("id") Long id, FeatureData featureData) {
+		Feature persistedFeature = Feature.repository().fetch(id);
+		
+		if (persistedFeature == null) {
+			return Response.status(404).build();
+		}
+		
 		Feature feature = FeatureData.build(featureData);
 		
 		try {
-			feature.setId(id);
-			feature.prepareForUpdate();
+			feature.prepareForUpdate(persistedFeature);
 			feature = feature.save();
 		} catch (ValidationException e) {
 			return Response.status(422).entity(e.getValidationFailures()).build();
@@ -96,6 +101,7 @@ public class FeatureService extends BaseService {
 	@DELETE
 	@Path("/{id}")
 	@PermitAll
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteFeature(@PathParam("id") Long id) {
 		Feature feature = Feature.repository().fetch(id);
 		
